@@ -1,2 +1,2 @@
-# worflows to maintain containers
+# worflows for containers
 produce multiarch containers
