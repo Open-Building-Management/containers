@@ -72,4 +72,7 @@ RUN set -eux;\
         touch /etc/mosquitto/passwd; \
         mosquitto_passwd -b /etc/mosquitto/passwd $mqtt_user $mqtt_password
 
+EXPOSE 80
+EXPOSE 1883
+
 ENTRYPOINT ["/init"]
