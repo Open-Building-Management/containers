@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ARG TARGETARCH
+ARG TARGETPLATFORM
 ARG S6_OVERLAY_VERSION=3.1.5.0
 ARG S6_SRC=https://github.com/just-containers/s6-overlay/releases/download
 ARG S6_DIR=/etc/s6-overlay/s6-rc.d
@@ -14,10 +14,6 @@ ENV MYSQL_PASSWORD=emonpiemoncmsmysql2016
 ENV OEM_DIR=/opt/openenergymonitor
 ENV MQTT_USER=emonpi
 ENV MQTT_PASSWORD=emonpimqtt2016
-ENV WWW=/var/www
-ENV EMONCMS_DATADIR=/var/opt/emoncms
-ENV EMONCMS_DIR=/opt/emoncms
-ENV EMONCMS_LOG_LOCATION=/var/log/emoncms
 
 RUN mkdir $OEM_DIR;\
 	groupadd $CONTAINER_USER;\
@@ -31,10 +27,10 @@ RUN apt-get update;\
 	apt-get install -y --no-install-recommends ca-certificates wget
 
 RUN set -eux;\
-	case $TARGETARCH in \
-		"amd64")  S6_ARCH="x86_64"  ;; \
-		"arm/v7") S6_ARCH="arm"  ;; \
-		"arm64") S6_ARCH="aarch64"  ;; \
+	case $TARGETPLATFORM in \
+		"linux/amd64")  S6_ARCH="x86_64"  ;; \
+		"linux/arm/v7") S6_ARCH="arm"  ;; \
+		"linux/arm64") S6_ARCH="aarch64"  ;; \
 	esac;\
 	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-$S6_ARCH.tar.xz;\
 	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-noarch.tar.xz;\
