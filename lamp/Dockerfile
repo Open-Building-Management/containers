@@ -32,8 +32,8 @@ RUN set -eux;\
 		"linux/arm/v7") S6_ARCH="arm"  ;; \
 		"linux/arm64") S6_ARCH="aarch64"  ;; \
 	esac;\
-	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-$S6_ARCH.tar.xz;\
-	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-noarch.tar.xz;\
+	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-$S6_ARCH.tar.xz --no-check-certificate;\
+	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-noarch.tar.xz --no-check-certificate;\
 	tar -C / -Jxpf /tmp/s6-overlay-$S6_ARCH.tar.xz;\
 	tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
 
