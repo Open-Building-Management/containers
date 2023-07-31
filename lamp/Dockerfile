@@ -120,6 +120,14 @@ RUN set -eux; \
 	printf "extension=mosquitto.so" | tee /etc/php/$PHP_VER/mods-available/mosquitto.ini 1>&2;\
 	phpenmod mosquitto
 
+# revovering some space
+RUN apt-get purge -y --auto-remove build-essential cmake;\
+	apt-get purge -y --auto-remove libssl-dev libc-ares-dev libcjson-dev;\
+ 	apt-get purge -y --auto-remove xsltproc docbook-xsl;\
+        apt-get clean;\
+	rm -rf /opt/*;\
+        rm -rf /var/lib/apt/lists/*
+
 EXPOSE 80
 EXPOSE 1883
 
