@@ -1,3 +1,7 @@
+when going to php8, use git clone --branch=php8 https://github.com/nismoryco/Mosquitto-PHP
+
+or https://github.com/openenergymonitor/Mosquitto-PHP
+
 # extended "lamp" server
 
 Servers :
