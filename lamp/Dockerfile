@@ -128,6 +128,11 @@ RUN apt-get purge -y --auto-remove build-essential cmake;\
 	rm -rf /opt/*;\
         rm -rf /var/lib/apt/lists/*
 
+ RUN rm /var/www/html/index.html;\
+	echo "<?php\n" > /var/www/html/index.php;\
+	echo "phpinfo();\n" >> /var/www/html/index.php;\
+	echo "?>" >> /var/www/html/index.php
+
 EXPOSE 80
 EXPOSE 1883
 
