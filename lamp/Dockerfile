@@ -15,16 +15,16 @@ ENV OEM_DIR=/opt/openenergymonitor
 ENV MQTT_USER=emonpi
 ENV MQTT_PASSWORD=emonpimqtt2016
 
+RUN apt-get update;\
+	apt-get install -y --no-install-recommends tzdata xz-utils;\
+	apt-get install -y --no-install-recommends sed nano sudo iputils-ping net-tools;\
+	apt-get install -y --no-install-recommends python3.8 python3-pip;\
+	apt-get install -y --no-install-recommends ca-certificates wget
+
 RUN mkdir $OEM_DIR;\
 	groupadd $CONTAINER_USER;\
 	useradd -rm -d /home/$CONTAINER_USER -s /bin/bash -g root -G sudo,dialout -u 1001 $CONTAINER_USER;\
         chown $CONTAINER_USER:$CONTAINER_USER $OEM_DIR
-
-RUN apt-get update;\
-	apt-get install -y --no-install-recommends tzdata xz-utils;\
-	apt-get install -y --no-install-recommends sed nano iputils-ping net-tools;\
-	apt-get install -y --no-install-recommends python3.8 python3-pip;\
-	apt-get install -y --no-install-recommends ca-certificates wget
 
 RUN set -eux;\
 	case $TARGETPLATFORM in \
