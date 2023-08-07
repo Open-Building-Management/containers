@@ -15,7 +15,7 @@ RUN git clone https://github.com/openenergymonitor/EmonScripts; \
 
 ARG TS="phpfina phpfiwa phptimeseries"
 
-RUN chown $CONTAINER_USER $www;\
+RUN chown $CONTAINER_USER $WWW;\
 	mkdir -p $EMONCMS_LOG_LOCATION;\
 	chown $CONTAINER_USER $EMONCMS_LOG_LOCATION;\
 	touch $EMONCMS_LOG_LOCATION/emoncms.log;\
@@ -34,7 +34,7 @@ RUN set -eux;\
 	cd $WWW && git clone -b stable https://github.com/emoncms/emoncms.git;\
 	cd $OEM_DIR;\
 	echo "emoncms_dir = '$EMONCMS_DIR'\n" > settings.ini;\
-    echo "openenergymonitor_dir = '$OEM_DIR'\n\n" >> settings.ini;\
+	echo "openenergymonitor_dir = '$OEM_DIR'\n\n" >> settings.ini;\
 	echo "[sql]\n" >> settings.ini;\
 	echo "server = '127.0.0.1'\n" >> settings.ini;\
 	echo "database = '$MYSQL_DATABASE'\n" >> settings.ini;\

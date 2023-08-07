@@ -1,3 +1,5 @@
 # emoncms container
 
-building using the lamp image
+The "root" [Dockerfile](Dockerfile) uses the lamp image
+
+In the alpine folder, the Dockerfile builds everything from scratch   
