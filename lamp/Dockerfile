@@ -124,11 +124,11 @@ RUN set -eux; \
 RUN apt-get purge -y --auto-remove build-essential cmake;\
 	apt-get purge -y --auto-remove libssl-dev libc-ares-dev libcjson-dev;\
  	apt-get purge -y --auto-remove xsltproc docbook-xsl;\
-        apt-get clean;\
+    apt-get clean;\
 	rm -rf /opt/*;\
-        rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
- RUN rm /var/www/html/index.html;\
+RUN rm /var/www/html/index.html;\
 	echo "<?php\n" > /var/www/html/index.php;\
 	echo "phpinfo();\n" >> /var/www/html/index.php;\
 	echo "?>" >> /var/www/html/index.php
