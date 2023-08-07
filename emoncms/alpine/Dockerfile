@@ -31,7 +31,7 @@ RUN apk add --no-cache php php-apache2 php-mysqli;\
 	apk add --no-cache php-gd php-curl php-common php-mbstring
 	
 RUN set -x;\
-    PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
+	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
 	apk add --no-cache php$PHP_VER-dev
 
 # more info on alpine-mariadb docker : https://hub.docker.com/r/yobasystems/alpine-mariadb/
