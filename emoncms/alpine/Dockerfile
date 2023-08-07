@@ -1,5 +1,6 @@
 FROM alpine:3.16
 
+ARG TARGETPLATFORM=linux/amd64
 ARG S6_OVERLAY_VERSION=3.1.5.0
 ARG S6_SRC=https://github.com/just-containers/s6-overlay/releases/download
 ARG S6_DIR=/etc/s6-overlay/s6-rc.d
@@ -55,12 +56,21 @@ RUN mysql_install_db --user=mysql --ldata=/var/lib/mysql;\
 	mkdir -p /run/mysqld;\
 	chown -R mysql:mysql /run/mysqld
 
-# it is possible to install s6-overlay with apk
-# so we can drop the TARGETPLATFORM GLOBAL ARG which supposes to have buildx
-# in case we switch back to the manual s6-overlay install, we have to apk add --no-cache execline
-RUN apk add --no-cache s6-overlay
+# it is possible to install s6-overlay with apk but it does not provide user2
+#RUN apk add --no-cache s6-overlay
+# if using the s6-overlays tarballs & execlineb is missing : apk add --no-cache execline
+RUN set -eux;\
+	case $TARGETPLATFORM in \
+		"linux/amd64")  S6_ARCH="x86_64"  ;; \
+		"linux/arm/v7") S6_ARCH="arm"  ;; \
+		"linux/arm64") S6_ARCH="aarch64"  ;; \
+	esac;\
+	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-$S6_ARCH.tar.xz --no-check-certificate;\
+	wget -P /tmp $S6_SRC/v$S6_OVERLAY_VERSION/s6-overlay-noarch.tar.xz --no-check-certificate;\
+	tar -C / -Jxpf /tmp/s6-overlay-$S6_ARCH.tar.xz;\
+	tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
 
-# use bin and not command for execlineb
+# if s6-overlay is installed via apk, use bin and not command for execlineb !!
 # cf https://github.com/just-containers/s6-overlay/issues/449
 RUN set -x;\
 	for i in $PRIMOS; do mkdir $S6_DIR/$i; done;\
@@ -68,7 +78,7 @@ RUN set -x;\
 	for i in $PRIMOS; do touch $S6_DIR/$i/dependencies.d/base; done;\
 	for i in $PRIMOS; do touch $S6_DIR/user/contents.d/$i; done;\
 	for i in $PRIMOS; do echo "longrun" > $S6_DIR/$i/type; done;\
-	for i in $PRIMOS; do echo "#!/bin/execlineb -P" > $S6_DIR/$i/run; done;\
+	for i in $PRIMOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
 	echo "/usr/sbin/httpd -D FOREGROUND" >> $S6_DIR/apache2/run;\
 	echo "redis-server $REDIS_CONF" >> $S6_DIR/redis/run;\
 	echo "s6-setuidgid mysql" >> $S6_DIR/mariadb/run;\
@@ -183,16 +193,18 @@ RUN echo "persistence false" >> $MQTT_CONF;\
 	printf "extension=mosquitto.so" | tee /etc/php$PHP_VER/conf.d/mosquitto.ini 1>&2
 
 RUN set -x;\
-	mkdir -p $S6_DIR/user2;\
-	mkdir -p $S6_DIR/user2/contents.d;\
-	touch $S6_DIR/user2/type;\
-	echo "bundle" > $S6_DIR/user2/type;\
+	#mkdir -p $S6_DIR/user2;\
+	#mkdir -p $S6_DIR/user2/contents.d;\
+	#touch $S6_DIR/user2/type;\
+	#echo "bundle" > $S6_DIR/user2/type;\
+	# needed for emoncms_mqtt to start ?
+	chown $CONTAINER_USER:wheel /var/lock;\
 	for i in $SECONDOS; do mkdir $S6_DIR/$i; done;\
 	for i in $SECONDOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
 	for i in $SECONDOS; do touch $S6_DIR/$i/dependencies.d/legacy-services; done;\
 	for i in $SECONDOS; do touch $S6_DIR/user2/contents.d/$i; done;\
 	for i in $SECONDOS; do echo "longrun" > $S6_DIR/$i/type; done;\
-	for i in $SECONDOS; do echo "#!/bin/execlineb -P" > $S6_DIR/$i/run; done;\
+	for i in $SECONDOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
 	echo "s6-setuidgid $CONTAINER_USER" >> $S6_DIR/emoncms_mqtt/run;\
 	echo "php $WWW/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.php" >> $S6_DIR/emoncms_mqtt/run
 
