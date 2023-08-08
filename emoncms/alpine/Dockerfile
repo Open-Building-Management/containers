@@ -7,7 +7,9 @@ ARG S6_DIR=/etc/s6-overlay/s6-rc.d
 
 ENV TZ="Europe/Paris"
 
-ENV CONTAINER_USER=pi
+# DAEMON is the user running the workers
+# it must be the same as the one running the webserver
+ENV DAEMON=apache
 ENV MYSQL_DATABASE=emoncms
 ENV MYSQL_USER=emoncms
 ENV MYSQL_PASSWORD=emonpiemoncmsmysql2016
@@ -43,7 +45,7 @@ RUN apk add --no-cache tzdata xz bash git make build-base;\
 RUN apk add --no-cache php php-gettext php-apache2 php-mysqli;\
 	apk add --no-cache php-gd php-curl php-common php-mbstring;\
 	apk add --no-cache php-session php-ctype
-	
+
 RUN set -x;\
 	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
 	apk add --no-cache php$PHP_VER-dev
@@ -86,17 +88,12 @@ RUN set -x;\
 	echo "mosquitto -c $MQTT_CONF" >> $S6_DIR/mosquitto/run
 
 # apache2/emoncms conf
-# no sudo group on alpine, using the wheel group instead
 # httpd user is apache and not www-data
-RUN set -x;\ 
-	#addgroup $CONTAINER_USER;\
-	#adduser -S $CONTAINER_USER -G wheel -u 1001;\
-	#addgroup $CONTAINER_USER dialout;\
+RUN set -x;\
 	mkdir -p $OEM_DIR;\
 	mkdir -p $EMONCMS_LOG_LOCATION;\
 	mkdir -p $EMONCMS_DIR;\
 	mkdir -p $EMONCMS_DATADIR;\
-	chown apache $EMONCMS_DATADIR;\
 	for i in $TS; do mkdir -p $EMONCMS_DATADIR/$i; done;\
 	for i in $TS; do chown apache $EMONCMS_DATADIR/$i; done;\
 	#chown $CONTAINER_USER:$CONTAINER_USER $OEM_DIR;\
@@ -151,6 +148,8 @@ RUN set -x;\
 	echo "    Require all granted" >> $HTTP_CONF;\
 	echo "</Directory>" >> $HTTP_CONF
 
+WORKDIR $OEM_DIR
+
 # mariadb conf
 # cf https://stackoverflow.com/questions/68578758
 # openrc is the apk package to use rc-service
@@ -170,13 +169,8 @@ RUN set -x;\
 	mysql -e "CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';";\
 	mysql -e "GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost'; flush privileges;";\
 	# for backup module quiet install
-	cd $OEM_DIR;\
 	git clone https://github.com/openenergymonitor/EmonScripts;\
 	cp EmonScripts/install/emonsd.config.ini EmonScripts/install/config.ini;\
-	#for sync to run...
-	#sudo_file=/etc/sudoers.d/$CONTAINER_USER;\
-	#echo $CONTAINER_USER' ALL=(ALL) NOPASSWD: ALL' | tee $sudo_file;\
-	#chmod 0440 $sudo_file;\
 	wget https://raw.githubusercontent.com/Open-Building-Management/containers/main/makefile --no-check-certificate;\
 	make module name=graph;\
 	make module name=dashboard;\
@@ -187,6 +181,12 @@ RUN set -x;\
 	echo "post_max_size=3G" > /etc/php$PHP_VER/conf.d/backup.ini;\
 	echo "upload_max_filesize=3G" >> /etc/php$PHP_VER/conf.d/backup.ini;\
 	echo "upload_tmp_dir=$EMONCMS_DATADIR/backup/uploads" >> /etc/php$PHP_VER/conf.d/backup.ini;\
+	chown apache $EMONCMS_DATADIR;\
+	chown apache $EMONCMS_DATADIR/backup;\
+	chown apache $EMONCMS_DATADIR/backup/uploads;\
+	# removing all trailing sudo instructions in Trystan shell scripts....
+	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-import.sh;\
+	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-export.sh;\
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/sync/emoncms-sync.sh;\
 	apk del --no-cache openrc;\
 	rm -Rf /run/openrc
@@ -197,7 +197,6 @@ RUN set -x;\
 	sed -i "s/^save 300 1/#save 300 1/" $REDIS_CONF;\
 	sed -i "s/^save 60 1/#save 60 1/" $REDIS_CONF;\
 	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
-	cd $OEM_DIR;\
 	git clone https://github.com/phpredis/phpredis;\
 	cd phpredis && phpize && ./configure && make && make install;\
 	printf "extension=redis.so" | tee /etc/php$PHP_VER/conf.d/redis.ini 1>&2;\
@@ -213,7 +212,6 @@ RUN set -x;\
 	touch /etc/mosquitto/passwd;\
 	mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD;\
 	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
-	cd $OEM_DIR;\
 	git clone https://github.com/openenergymonitor/Mosquitto-PHP;\
 	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
 	printf "extension=mosquitto.so" | tee /etc/php$PHP_VER/conf.d/mosquitto.ini 1>&2
