@@ -59,8 +59,8 @@ then `docker exec -it 260141ad1f2f bash`
 
 ## post datas to the broker
 
-supposing the IP a the ***wired*** machine to be 192.168.1.53, you can post datas from your local network :
+supposing the IP of the ***wired*** machine running emoncms to be 192.168.1.53, you can post datas from your local network :
 ```
 mosquitto_pub -h 192.168.1.53 -p 7883 -u "emonpi" -P "emonpimqtt2016" -t 'emon/test/t3' -m 43.67
 ```
-if you dont have mosquitto_pub installed and are on a debian/ubuntu machine : `sudo apt-get install mosquitto-clients`
+if you dont have mosquitto_pub installed and are on debian/ubuntu : `sudo apt-get install mosquitto-clients`
