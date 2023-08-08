@@ -35,13 +35,15 @@ docker build --build-arg="TARGETPLATFORM=linux/amd64" -t alpinelamp .
 
 # basic knowledge for initial testing
 
-## start the emoncms container and initiate a command line connection
+## start the emoncms container
 
 on a ***wired*** machine, start emoncms :
 ```
 docker run --rm -p 8081:80 -p 7883:1883 -it alpinelamp
 ```
-on the same machine running the container, you can connect access to it :
+## initiate a command line connection
+
+on the same machine running the container, start another terminal :
 ```
 docker container ls
 CONTAINER ID   IMAGE        COMMAND                  CREATED          STATUS          PORTS                                                                              NAMES
@@ -64,3 +66,7 @@ supposing the IP of the ***wired*** machine running emoncms to be 192.168.1.53, 
 mosquitto_pub -h 192.168.1.53 -p 7883 -u "emonpi" -P "emonpimqtt2016" -t 'emon/test/t3' -m 43.67
 ```
 if you dont have mosquitto_pub installed and are on debian/ubuntu : `sudo apt-get install mosquitto-clients`
+
+## shutdown the container 
+
+`docker stop 260141ad1f2f`
