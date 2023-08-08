@@ -6,7 +6,7 @@ it brings the phpize command
 
 apk add php-dev not working
 
-apk add php8-dev only working on 3.16 not 3.17 or 3.18
+apk add php8-dev only working on alpine 3.16 not 3.17 or 3.18
 
 # conf files customization
 
