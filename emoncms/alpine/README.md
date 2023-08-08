@@ -1,3 +1,12 @@
+The alpine project does not have a `sudo` group but a `wheel` group instead
+
+To create user with sudo priviledges and access to IO through the dialout group:
+```
+addgroup $USER
+adduser -S $USER -G wheel -u 1001
+addgroup $USER dialout
+```
+
 # php-dev
 
 php-dev is necessary to compile mosquitto-PHP and phpredis
