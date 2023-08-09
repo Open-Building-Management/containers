@@ -213,6 +213,7 @@ RUN set -x;\
 # redis and mosquitto conf : simple
 # build-base is required to compile with gcc
 # mosquitto-dev is needed to compile mosquitto-PHP
+# we need phpize so we install php-dev
 RUN set -x;\
 	apk add --no-cache build-base mosquitto-dev;\
 	apk add --no-cache py3-pip php$PHP_VER-dev;\
