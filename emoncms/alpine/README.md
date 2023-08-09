@@ -18,15 +18,15 @@ it brings the phpize command
 `apk add php8-dev` only working on alpine 3.16 not 3.17 or 3.18
 
 # conf files customization
+in the Dockerfile :
 
-having to use sed for the httpd.conf
-
-echo is enough for mosquitto.conf as the config file coming from the src contains only comments
+- having to use sed for the httpd.conf, but in a quite elegant way
+- echo is enough for mosquitto.conf as the config file coming from the src contains only comments
 
 # apk packages
 
-to list installed packages while connected to the container in bash
+while connected to the container in bash :
 
-```
-apk list -I
-```
+- to list installed packages `apk list -I`
+- to list mosquitto related packages : `apk search mosquitto*`
+
