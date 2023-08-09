@@ -251,8 +251,8 @@ RUN set -x;\
 	echo "s6-setuidgid $DAEMON" >> $S6_DIR/feedwriter/run;\
 	echo "php $WWW/emoncms/scripts/feedwriter.php" >> $S6_DIR/feedwriter/run;\
 	#chown $DAEMON $OEM_DIR;\
-	chown $DAEMON $WWW;\
-	chown $DAEMON $EMONCMS_DIR
+	chown -R $DAEMON $WWW/emoncms;\
+	chown -R $DAEMON $EMONCMS_DIR
 
 EXPOSE 80
 EXPOSE 1883
