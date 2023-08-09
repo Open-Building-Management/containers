@@ -35,11 +35,11 @@ docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:alpine3.16 emon
 
 Initially working on ubuntu, I switched to alpine to see if it could be possible to produce a smaller image
 
-The ubuntu/debian process was organise in two separate phases : 
+The ubuntu/debian build is a 2 phases process : 
 - build a lamp image
 - use that image to install emoncms
 
-To build the debian/ubuntu images:
+To build the debian/ubuntu lamp images:
 
 ```
 docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:ubuntu20.04 lamp/ubuntu.
