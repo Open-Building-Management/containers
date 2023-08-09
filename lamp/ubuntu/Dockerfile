@@ -55,21 +55,45 @@ RUN \
 	apt-get install -y --no-install-recommends --yes apache2 gettext;\
 	apt-get install -y --no-install-recommends --yes mariadb-server mariadb-client;\
 	apt-get install -y --no-install-recommends --yes php libapache2-mod-php php-mysql;\
-	apt-get install -y --no-install-recommends --yes php-gd php-curl php-dev php-common php-mbstring;\
+	apt-get install -y --no-install-recommends --yes php-gd php-curl php-common php-mbstring;\
 	apt-get install -y --no-install-recommends --yes redis-server
+
+WORKDIR $OEM_DIR
 
 RUN \
 	apt-get install -y git;\
 	#apt-get install -y --no-install-recommends --yes mosquitto libmosquitto-dev;\
 	# Compile and install mosquitto from source
-	apt-get install -y build-essential make cmake openssl libssl-dev;\
+	apt-get install -y php-dev build-essential make cmake openssl libssl-dev;\
 	apt-get install -y libc-ares2 libc-ares-dev;\
 	apt-get install -y libcjson1 libcjson-dev xsltproc docbook-xsl;\
-	cd $OEM_DIR;\
 	git clone https://github.com/eclipse/mosquitto \
 	&& cd mosquitto \
 	&& make WITH_SRV=yes \
-	&& make install
+	&& make install;\
+	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d"." );\
+	# phpredis
+	cd $OEM_DIR;\
+	git clone https://github.com/phpredis/phpredis;\
+	cd phpredis && phpize && ./configure && make && make install;\
+	printf "extension=redis.so" | tee /etc/php/$PHP_VER/mods-available/redis.ini 1>&2;\
+	phpenmod redis;\
+	# redis-py
+	pip3 install redis;\
+	# mosquitto-php
+	cd $OEM_DIR;\
+	git clone https://github.com/mgdm/Mosquitto-PHP;\
+	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
+	printf "extension=mosquitto.so" | tee /etc/php/$PHP_VER/mods-available/mosquitto.ini 1>&2;\
+	phpenmod mosquitto;\
+	rm -Rf /$OEM_DIR/phpredis;\
+	rm -Rf /$OEM_DIR/Mosquitto-PHP;\
+	rm -Rf /$OEM_DIR/mosquitto;\
+	# revovering some space
+	apt-get purge -y --auto-remove php-dev build-essential cmake;\
+	apt-get purge -y --auto-remove libssl-dev libc-ares-dev libcjson-dev;\
+	apt-get purge -y --auto-remove xsltproc docbook-xsl;\
+	apt-get clean
 
 ARG MQTT_CONF=/etc/mosquitto/mosquitto.conf
 ARG REDIS_CONF=/etc/redis/redis.conf
@@ -102,31 +126,6 @@ RUN set -eux;\
 	echo "#log_type error" >> $MQTT_CONF;\
 	touch /etc/mosquitto/passwd;\
 	mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD
-
-RUN set -eux; \
-	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d"." );\
-	# phpredis
-	cd $OEM_DIR;\
-	git clone https://github.com/phpredis/phpredis;\
-	cd phpredis && phpize && ./configure && make && make install;\
-	printf "extension=redis.so" | tee /etc/php/$PHP_VER/mods-available/redis.ini 1>&2;\
-	phpenmod redis;\
-	# redis-py
-	pip3 install redis;\
-	# mosquitto-php
-	cd $OEM_DIR;\
-	git clone https://github.com/mgdm/Mosquitto-PHP;\
-	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
-	printf "extension=mosquitto.so" | tee /etc/php/$PHP_VER/mods-available/mosquitto.ini 1>&2;\
-	phpenmod mosquitto
-
-# revovering some space
-RUN apt-get purge -y --auto-remove build-essential cmake;\
-	apt-get purge -y --auto-remove libssl-dev libc-ares-dev libcjson-dev;\
-	apt-get purge -y --auto-remove xsltproc docbook-xsl;\
-	apt-get clean;\
-	rm -rf /opt/*;\
-	rm -rf /var/lib/apt/lists/*
 
 RUN rm /var/www/html/index.html;\
 	echo "<?php\n" > /var/www/html/index.php;\
