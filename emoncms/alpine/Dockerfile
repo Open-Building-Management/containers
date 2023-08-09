@@ -9,6 +9,7 @@ ENV TZ="Europe/Paris"
 
 # DAEMON is the user running the workers
 # it must be the same as the one running the webserver
+# on alpine, httpd user is apache and not www-data
 ENV DAEMON=apache
 ENV MYSQL_DATABASE=emoncms
 ENV MYSQL_USER=emoncms
@@ -27,28 +28,31 @@ ARG TS="phpfina phpfiwa phptimeseries"
 ARG HTTP_CONF=/etc/apache2/httpd.conf
 ARG MQTT_CONF=/etc/mosquitto/mosquitto.conf
 ARG REDIS_CONF=/etc/redis.conf
+# we could do PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".") in each RUN
+# we need PHP_VER to install the php-dev apk package and for the path to PHP CONF/INI files
+ARG PHP_VER=8
+# we dont modify php.ini, we create new extensions in conf.d
+ARG PHP_CONF=/etc/php8/conf.d
+# source for Mosquitto-PHP extension
+# original repo is https://github.com/mgdm/Mosquitto-PHP
+# but it does not work for php8
+ARG MOSQUITTO_PHP=https://github.com/openenergymonitor/Mosquitto-PHP
 
-#RUN apk update && apk upgrade
+RUN apk update && apk upgrade
 
-# build-base is required to compile with gcc
-# mosquitto-dev is needed to compile mosquitto-PHP
-RUN apk add --no-cache tzdata xz bash git make build-base;\
-	apk add --no-cache sed nano sudo;\
-	apk add --no-cache python3 py3-pip;\
+RUN apk add --no-cache tzdata xz bash git make;\
+	apk add --no-cache sed nano;\
+	apk add --no-cache python3;\
 	apk add --no-cache ca-certificates wget;\
 	apk add --no-cache apache2 gettext;\
 	apk add --no-cache mariadb mariadb-client;\
 	apk add --no-cache redis;\
-	apk add --no-cache mosquitto mosquitto-dev
+	apk add --no-cache mosquitto
 
 # php-gettext available via apk 
 RUN apk add --no-cache php php-gettext php-apache2 php-mysqli;\
 	apk add --no-cache php-gd php-curl php-common php-mbstring;\
 	apk add --no-cache php-session php-ctype
-
-RUN set -x;\
-	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
-	apk add --no-cache php$PHP_VER-dev
 
 # more info on alpine-mariadb docker : https://hub.docker.com/r/yobasystems/alpine-mariadb/
 # the following is not executed when installing mariadb via apk 
@@ -87,24 +91,39 @@ RUN set -x;\
 	echo "mysqld" >> $S6_DIR/mariadb/run;\
 	echo "mosquitto -c $MQTT_CONF" >> $S6_DIR/mosquitto/run
 
-# apache2/emoncms conf
-# httpd user is apache and not www-data
+# creating folders, setting permissions and cloning emoncms sources
 RUN set -x;\
 	mkdir -p $OEM_DIR;\
 	mkdir -p $EMONCMS_LOG_LOCATION;\
 	mkdir -p $EMONCMS_DIR;\
 	mkdir -p $EMONCMS_DATADIR;\
+	mkdir -p $EMONCMS_DATADIR/backup;\
+	mkdir -p $EMONCMS_DATADIR/backup/uploads;\
 	for i in $TS; do mkdir -p $EMONCMS_DATADIR/$i; done;\
-	for i in $TS; do chown apache $EMONCMS_DATADIR/$i; done;\
-	#chown $CONTAINER_USER:$CONTAINER_USER $OEM_DIR;\
-	#chown $CONTAINER_USER $WWW;\	
-	chown apache $EMONCMS_LOG_LOCATION;\
+	chown -R $DAEMON $EMONCMS_DATADIR;\
+	chown $DAEMON $EMONCMS_LOG_LOCATION;\
 	touch $EMONCMS_LOG_LOCATION/emoncms.log;\
 	chmod 666 $EMONCMS_LOG_LOCATION/emoncms.log;\
-	#chown $CONTAINER_USER $EMONCMS_DIR;\
+	# needed for emoncms_mqtt and feedwriter which create a lock at startup
+	chown $DAEMON /var/lock;\
+	# needed for the backup module when importing a tar.gz
+	chown $DAEMON /tmp;\
 	cd $WWW && git clone -b stable https://github.com/emoncms/emoncms.git;\
-	rm -Rf $WWW/emoncms/docs;\
-	cd $OEM_DIR;\
+	rm -Rf $WWW/emoncms/docs
+
+WORKDIR $OEM_DIR
+
+COPY makefile .
+
+# apache2/emoncms conf
+RUN set -x;\
+	# the following 3 lines are for the admin module : not nice ;-(
+	# in container the admin module is just to see emoncms log
+	# solution could be not to use admin module anymore
+	# for this set enable_admin_ui to false
+	git config --system --replace-all safe.directory '*';\
+	git clone https://github.com/openenergymonitor/EmonScripts;\
+	cp EmonScripts/install/emonsd.config.ini EmonScripts/install/config.ini;\
 	echo "emoncms_dir = '$EMONCMS_DIR'" > settings.ini;\
 	echo "openenergymonitor_dir = '$OEM_DIR'" >> settings.ini;\
 	echo "[sql]" >> settings.ini;\
@@ -148,13 +167,10 @@ RUN set -x;\
 	echo "    Require all granted" >> $HTTP_CONF;\
 	echo "</Directory>" >> $HTTP_CONF
 
-WORKDIR $OEM_DIR
-
 # mariadb conf
 # cf https://stackoverflow.com/questions/68578758
 # openrc is the apk package to use rc-service
-# to remove openrc : apk del --no-cache openrc
-# and rm -Rf /run/openrc
+# we remove it at the end of the run but it is a small package
 RUN set -x;\
 	apk add --no-cache openrc;\
 	rc-update add mariadb;\
@@ -168,42 +184,45 @@ RUN set -x;\
 	mysql -e "CREATE DATABASE $MYSQL_DATABASE DEFAULT CHARACTER SET utf8;";\
 	mysql -e "CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';";\
 	mysql -e "GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost'; flush privileges;";\
-	# for backup module quiet install
-	git clone https://github.com/openenergymonitor/EmonScripts;\
-	cp EmonScripts/install/emonsd.config.ini EmonScripts/install/config.ini;\
-	wget https://raw.githubusercontent.com/Open-Building-Management/containers/main/makefile --no-check-certificate;\
 	make module name=graph;\
 	make module name=dashboard;\
 	make symodule name=sync;\
 	make symodule name=postprocess;\
 	make symodule name=backup;\
-	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
-	echo "post_max_size=3G" > /etc/php$PHP_VER/conf.d/backup.ini;\
-	echo "upload_max_filesize=3G" >> /etc/php$PHP_VER/conf.d/backup.ini;\
-	echo "upload_tmp_dir=$EMONCMS_DATADIR/backup/uploads" >> /etc/php$PHP_VER/conf.d/backup.ini;\
-	chown apache $EMONCMS_DATADIR;\
-	chown apache $EMONCMS_DATADIR/backup;\
-	chown apache $EMONCMS_DATADIR/backup/uploads;\
+	# backup and sync configuration
+	echo "user=$DAEMON" > config.cfg;\
+	echo "backup_script_location=$EMONCMS_DIR/modules/backup" >> config.cfg;\
+	echo "emoncms_location=$WWW/emoncms" >> config.cfg;\
+	echo "backup_location=$EMONCMS_DATADIR/backup" >> config.cfg;\
+	echo "database_path=$EMONCMS_DATADIR" >> config.cfg;\
+	echo "emonhub_config_path=" >> config.cfg;\
+	echo "emonhub_specimen_config=" >> config.cfg;\
+	echo "backup_source_path=$EMONCMS_DATADIR/backup/uploads" >> config.cfg;\ 
+	cp config.cfg $EMONCMS_DIR/modules/backup/config.cfg;\
+	echo "post_max_size=3G" > $PHP_CONF/backup.ini;\
+	echo "upload_max_filesize=3G" >> $PHP_CONF/backup.ini;\
+	echo "upload_tmp_dir=$EMONCMS_DATADIR/backup/uploads" >> $PHP_CONF/backup.ini;\
 	# removing all trailing sudo instructions in Trystan shell scripts....
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-import.sh;\
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-export.sh;\
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/sync/emoncms-sync.sh;\
+	# recovering some space
 	apk del --no-cache openrc;\
 	rm -Rf /run/openrc
 
-# redis conf : simple
+# redis and mosquitto conf : simple
+# build-base is required to compile with gcc
+# mosquitto-dev is needed to compile mosquitto-PHP
 RUN set -x;\
+	apk add --no-cache build-base mosquitto-dev;\
+	apk add --no-cache py3-pip php$PHP_VER-dev;\
 	sed -i "s/^save 900 1/#save 900 1/" $REDIS_CONF;\
 	sed -i "s/^save 300 1/#save 300 1/" $REDIS_CONF;\
 	sed -i "s/^save 60 1/#save 60 1/" $REDIS_CONF;\
-	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
 	git clone https://github.com/phpredis/phpredis;\
 	cd phpredis && phpize && ./configure && make && make install;\
-	printf "extension=redis.so" | tee /etc/php$PHP_VER/conf.d/redis.ini 1>&2;\
-	pip3 install redis
-
-# mosquitto conf : fine
-RUN set -x;\
+	printf "extension=redis.so" | tee $PHP_CONF/redis.ini 1>&2;\
+	pip3 install redis;\
 	echo "persistence false" >> $MQTT_CONF;\
 	echo "allow_anonymous false" >> $MQTT_CONF;\
 	echo "listener 1883" >> $MQTT_CONF;\
@@ -211,27 +230,29 @@ RUN set -x;\
 	echo "#log_type error" >> $MQTT_CONF;\
 	touch /etc/mosquitto/passwd;\
 	mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD;\
-	PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".");\
-	git clone https://github.com/openenergymonitor/Mosquitto-PHP;\
+	git clone $MOSQUITTO_PHP;\
 	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
-	printf "extension=mosquitto.so" | tee /etc/php$PHP_VER/conf.d/mosquitto.ini 1>&2
+	printf "extension=mosquitto.so" | tee $PHP_CONF/mosquitto.ini 1>&2;\
+	apk del --no-cache build-base mosquitto-dev;\
+	apk del --no-cache py3-pip php$PHP_VER-dev
 
+# user2 level services = workers
 RUN set -x;\
-	# needed for emoncms_mqtt and feedwriter to start ?
-	chown apache /var/lock;\
-	chown apache /tmp;\
 	for i in $SECONDOS; do mkdir $S6_DIR/$i; done;\
 	for i in $SECONDOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
 	for i in $SECONDOS; do touch $S6_DIR/$i/dependencies.d/legacy-services; done;\
 	for i in $SECONDOS; do touch $S6_DIR/user2/contents.d/$i; done;\
 	for i in $SECONDOS; do echo "longrun" > $S6_DIR/$i/type; done;\
 	for i in $SECONDOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
-	echo "s6-setuidgid apache" >> $S6_DIR/emoncms_mqtt/run;\
+	echo "s6-setuidgid $DAEMON" >> $S6_DIR/emoncms_mqtt/run;\
 	echo "php $WWW/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.php" >> $S6_DIR/emoncms_mqtt/run;\
-	echo "s6-setuidgid apache" >> $S6_DIR/service-runner/run;\
+	echo "s6-setuidgid $DAEMON" >> $S6_DIR/service-runner/run;\
 	echo "python3 $WWW/emoncms/scripts/services/service-runner/service-runner.py" >> $S6_DIR/service-runner/run;\
-	echo "s6-setuidgid apache" >> $S6_DIR/feedwriter/run;\
-	echo "php $WWW/emoncms/scripts/feedwriter.php" >> $S6_DIR/feedwriter/run
+	echo "s6-setuidgid $DAEMON" >> $S6_DIR/feedwriter/run;\
+	echo "php $WWW/emoncms/scripts/feedwriter.php" >> $S6_DIR/feedwriter/run;\
+	#chown $DAEMON $OEM_DIR;\
+	chown $DAEMON $WWW;\
+	chown $DAEMON $EMONCMS_DIR
 
 EXPOSE 80
 EXPOSE 1883
