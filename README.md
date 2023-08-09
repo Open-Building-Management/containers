@@ -2,7 +2,7 @@
 
 Based on the s6-overlay init system : https://github.com/just-containers/s6-overlay/
 
-emoncms is a very nice piece of software in the world of real time data monitoring
+[emoncms](https://github.com/emoncms/emoncms) is a very nice piece of software in the world of real time data monitoring
 
 it uses : 
 - a self crafted binary timeserie called phpfina and mariadb to store metadatas
@@ -12,7 +12,7 @@ it uses :
 
 The web app, traditionnaly running on a apache2 webserver, has got a MVC architecture and is structured around modules. The most universal ones are graph, postprocess, sync, dashboard and backup. 
 
-Usually, emoncms is installed through a collection of scripts : cf https://github.com/openenergymonitor/EmonScripts, as it is intended to work on hardware (such as the emonpi) designed by the [openenergymonitor startup](https://openenergymonitor.org). These scripts are specific to raspian/ubuntu architectures, and make extensive use of debian tricks : (a2enconf, a2ensite, a2dissite, phpenmod...) and of systemd and sudo
+Usually, emoncms is installed through a collection of [scripts](https://github.com/openenergymonitor)/EmonScripts, as it is intended to work on hardware (such as the emonpi) designed by the [openenergymonitor startup](https://openenergymonitor.org). These scripts are specific to raspian/ubuntu architectures, and make extensive use of debian tricks : (a2enconf, a2ensite, a2dissite, phpenmod...) and of systemd and sudo
 
 To speed up emoncms use on other platforms, it should be convenient to have a container bringing together the web app and the universal modules, the databases, the mqtt broker and the main workers
 
