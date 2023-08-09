@@ -30,3 +30,11 @@ while connected to the container in bash :
 - to list installed packages `apk list -I`
 - to list mosquitto related packages : `apk search mosquitto*`
 
+in order to keep image size as small as possible, and if a package is only required at build time, in a specific RUN and is not necessary to the execution phase, this seems to be a good practise:
+
+```
+RUN apk add --no-cache package;\
+    do required things;\
+    apk del --no-cache package
+```
+the add and the del must be executed in the same RUN
