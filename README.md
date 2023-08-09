@@ -12,7 +12,10 @@ it uses :
 
 The web app, traditionnaly running on a apache2 webserver, has got a MVC architecture and is structured around modules. The most universal ones are graph, postprocess, sync, dashboard and backup. 
 
-Usually, emoncms is installed through a collection of [scripts](https://github.com/openenergymonitor/EmonScripts), mostly intended to work on hardware (such as the emonpi) designed by the [openenergymonitor startup](https://openenergymonitor.org). These scripts are specific to raspian/ubuntu architectures, and make extensive use of debian tricks : (a2enconf, a2ensite, a2dissite, phpenmod...) and of systemd and sudo
+Usually, emoncms is installed through a collection of [scripts](https://github.com/openenergymonitor/EmonScripts), mostly intended to work on hardware designed by the [openenergymonitor startup](https://openenergymonitor.org), such as the [emonpi](https://github.com/openenergymonitor/emonpi). These scripts are specific to raspian/ubuntu architectures, and make extensive use of : 
+- debian tricks like a2enconf, a2ensite, a2dissite, phpenmod...
+- sudo, as they are launched after (and by) the first system user (a sudoer) has been created,
+- systemctl, the service manager of the systemd init system.
 
 To speed up emoncms use on other platforms, it should be convenient to have a container bringing together the web app and the universal modules, the databases, the mqtt broker and the main workers
 
