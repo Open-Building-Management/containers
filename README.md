@@ -27,7 +27,7 @@ Several attempts to port emoncms to container architecture are worth mentioning 
 
 # building
 
-github actions workflows produce multiarch containers for amd64, armv7 and aarch64, and Dockerfiles use the `TARGETPLATFORM` global var
+[github actions workflows](https://github.com/Open-Building-Management/containers/actions) produce multiarch containers for amd64, armv7 and aarch64, and Dockerfiles use the `TARGETPLATFORM` global var
 
 if you want to try a local build on a x86_64 linux machine and don't have buildx installed, the `TARGETPLATFORM` global var will not be accessible
 
