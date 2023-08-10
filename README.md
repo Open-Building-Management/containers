@@ -5,7 +5,7 @@ Based on the s6-overlay init system : https://github.com/just-containers/s6-over
 [emoncms](https://github.com/emoncms/emoncms) is a very nice piece of software in the world of real time data monitoring
 
 it uses : 
-- a self crafted binary timeserie called phpfina and mariadb to store metadatas
+- a self crafted binary timeserie called [phpfina](https://github.com/emoncms/emoncms/tree/master/docs/timeseries) and mariadb to store metadatas. You can exploit recorded feeds as python numpy arrays using the [PyFina library](https://github.com/Open-Building-Management/PyFina).
 - the eclipse mosquitto broker
 - redis as a data buffer when writing to disk on timeseries
 - three main workers to achieve background operations : emoncms_mqtt, service-runner and feedwriter
