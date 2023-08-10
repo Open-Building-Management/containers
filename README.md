@@ -22,7 +22,7 @@ To speed up emoncms use on other platforms, it should be convenient to have a co
 Several attempts to port emoncms to container architecture are worth mentioning :
 
 - https://github.com/emoncms/emoncms-docker, which aims to have each part of emoncms running in separate containers. Anyway the project introduced the use of [supervisord](http://supervisord.org/) to run multiple services in the same container
-- https://github.com/inverse/hassio-addon-emoncms/, an addon for [HomeAssistant](https://www.home-assistant.io) using s6-overlay but not yet ready for stable use
+- https://github.com/inverse/hassio-addon-emoncms/, an addon for [HomeAssistant](https://www.home-assistant.io) using s6-overlay and nginx as the web server but not yet ready for stable use
 - https://github.com/jakezp/emoncms, unmaintained for the last 4 years but popular on docker hub in the past (10K downloads) and only for amd64 architecture
 
 # building
@@ -58,7 +58,7 @@ on a ***wired*** machine, start emoncms :
 ```
 docker run --rm -p 8081:80 -p 7883:1883 -it emoncms:alpine3.16
 ```
-## initiate a command line connection
+## bash connection to the container
 
 on the same machine running the container, start another terminal :
 ```
