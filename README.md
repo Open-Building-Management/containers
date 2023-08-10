@@ -1,3 +1,5 @@
+status : active work in progess
+
 # a container for the emoncms stack : why ?
 
 Based on the s6-overlay init system : https://github.com/just-containers/s6-overlay/
