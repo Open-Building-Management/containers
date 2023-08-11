@@ -36,7 +36,7 @@ if you want to try a local build on a x86_64 linux machine and don't have buildx
 To build the alpine image :
 
 ```
-docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:alpine3.16 emoncms/alpine.
+docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:alpine3.16 emoncms/alpine/.
 ```
 
 Initially working on ubuntu, I switched to alpine to see if it could be possible to produce a smaller image
@@ -48,8 +48,8 @@ The ubuntu/debian build is a 2 phases process :
 To build the debian/ubuntu lamp images:
 
 ```
-docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:ubuntu20.04 lamp/ubuntu.
-docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:buster lamp/debian.
+docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:ubuntu20.04 lamp/ubuntu/.
+docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:buster lamp/debian/.
 ```
 
 # basic knowledge for initial testing
