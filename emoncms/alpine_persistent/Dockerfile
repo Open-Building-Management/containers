@@ -7,24 +7,31 @@ ARG S6_DIR=/etc/s6-overlay/s6-rc.d
 
 ENV TZ="Europe/Paris"
 
+# the sql database and the timeseries will be in /data
+# we start with the sql database
 # DAEMON is the user running the workers
 # it must be the same as the one running the webserver
 # on alpine, httpd user is apache and not www-data
-ENV DAEMON=apache
-ENV MYSQL_DATABASE=emoncms
-ENV MYSQL_USER=emoncms
-ENV MYSQL_PASSWORD=emonpiemoncmsmysql2016
-ENV OEM_DIR=/opt/openenergymonitor
-ENV MQTT_USER=emonpi
-ENV MQTT_PASSWORD=emonpimqtt2016
-ENV WWW=/var/www
-ENV EMONCMS_DATADIR=/var/opt/emoncms
-ENV TS="phpfina phpfiwa phptimeseries"
-ENV EMONCMS_DIR=/opt/emoncms
-ENV EMONCMS_LOG_LOCATION=/var/log/emoncms
+ENV \
+	DAEMON=apache \
+	DATA=/data \
+	EMONCMS_DATADIR=/var/opt/emoncms \
+	TS="phpfina phpfiwa phptimeseries" \
+	MYSQL_DATABASE=emoncms \
+	MYSQL_USER=emoncms \
+	MYSQL_PASSWORD=emonpiemoncmsmysql2016 \
+	MQTT_USER=emonpi \
+	MQTT_PASSWORD=emonpimqtt2016 \
+	WWW=/var/www \
+	OEM_DIR=/opt/openenergymonitor \
+	EMONCMS_DIR=/opt/emoncms \
+	EMONCMS_LOG_LOCATION=/var/log/emoncms
 
-ARG PRIMOS="apache2 redis mosquitto mariadb emoncms_pre"
-ARG SECONDOS="emoncms_mqtt service-runner feedwriter"
+RUN mkdir -p $DATA
+
+ARG \
+	PRIMOS="apache2 redis mosquitto mariadb" \
+	SECONDOS="emoncms_mqtt service-runner feedwriter"
 
 ARG HTTP_CONF=/etc/apache2/httpd.conf
 ARG MQTT_CONF=/etc/mosquitto/mosquitto.conf
@@ -55,14 +62,6 @@ RUN apk add --no-cache php php-gettext php-apache2 php-mysqli;\
 	apk add --no-cache php-gd php-curl php-common php-mbstring;\
 	apk add --no-cache php-session php-ctype
 
-# more info on alpine-mariadb docker : https://hub.docker.com/r/yobasystems/alpine-mariadb/
-# the following is not executed when installing mariadb via apk 
-# cf https://mariadb.com/kb/en/mysql_install_db/
-# some people say to launch /etc/init.d/mariadb setup ????
-RUN mysql_install_db --user=mysql --ldata=/var/lib/mysql;\
-	mkdir -p /run/mysqld;\
-	chown -R mysql:mysql /run/mysqld
-
 # it is possible to install s6-overlay with apk but it does not provide user2
 #RUN apk add --no-cache s6-overlay
 # if using the s6-overlays tarballs & execlineb is missing : apk add --no-cache execline
@@ -80,9 +79,17 @@ RUN set -x;\
 # if s6-overlay is installed via apk, use bin and not command for execlineb !!
 # cf https://github.com/just-containers/s6-overlay/issues/449
 RUN set -x;\
+	# initializing timeseries and mariadb with a oneshot service called emoncms_pre
+	mkdir $S6_DIR/emoncms_pre;\
+	mkdir $S6_DIR/emoncms_pre/dependencies.d;\
+	touch $S6_DIR/emoncms_pre/dependencies.d/base;\
+	echo "oneshot" > $S6_DIR/emoncms_pre/type;\
+	echo "$OEM_DIR/emoncms_pre.sh" > $S6_DIR/emoncms_pre/up;\
+	touch $S6_DIR/user/contents.d/emoncms_pre;\
+	# starting primo services after emoncms_pre
 	for i in $PRIMOS; do mkdir $S6_DIR/$i; done;\
 	for i in $PRIMOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
-	for i in $PRIMOS; do touch $S6_DIR/$i/dependencies.d/base; done;\
+	for i in $PRIMOS; do touch $S6_DIR/$i/dependencies.d/emoncms_pre; done;\
 	for i in $PRIMOS; do touch $S6_DIR/user/contents.d/$i; done;\
 	for i in $PRIMOS; do echo "longrun" > $S6_DIR/$i/type; done;\
 	for i in $PRIMOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
@@ -90,17 +97,10 @@ RUN set -x;\
 	echo "redis-server $REDIS_CONF" >> $S6_DIR/redis/run;\
 	echo "mosquitto -c $MQTT_CONF" >> $S6_DIR/mosquitto/run;\
 	echo "s6-setuidgid mysql" >> $S6_DIR/mariadb/run;\
-	echo "mysqld" >> $S6_DIR/mariadb/run;\
-	# launch mariadb after emoncms_pre 
-	rm $S6_DIR/mariadb/dependencies.d/base;\
-	touch $S6_DIR/mariadb/dependencies.d/emoncms_pre;\
-	# configure emoncms_pre as a oneshot service running $OEM_DIR/emoncms_pre.sh
-	rm $S6_DIR/emoncms_pre/run;\
-	echo "oneshot" > $S6_DIR/emoncms_pre/type;\
-	echo "$OEM_DIR/emoncms_pre.sh" > $S6_DIR/emoncms_pre/up
+	echo "mysqld --datadir=$DATA/mysql" >> $S6_DIR/mariadb/run
 
 # creating folders, setting permissions and cloning emoncms sources
-# there is a oneshot emoncms_pre.sh script doing extra things
+# emoncms_pre.sh oneshot service initializes at startup timeseries folders and mariadb
 RUN set -x;\
 	mkdir -p $OEM_DIR;\
 	mkdir -p $EMONCMS_LOG_LOCATION;\
@@ -113,7 +113,12 @@ RUN set -x;\
 	# needed for the backup module when importing a tar.gz
 	chown $DAEMON /tmp;\
 	cd $WWW && git clone -b stable https://github.com/emoncms/emoncms.git;\
-	rm -Rf $WWW/emoncms/docs
+	rm -Rf $WWW/emoncms/docs;\
+	mkdir -p /run/mysqld;\
+	chown -R mysql:mysql /run/mysqld;\
+	mv /etc/my.cnf /etc/my.old;\
+	echo "[mysqld]" >> /etc/my.cnf;\
+	echo "datadir=$DATA/mysql" >> /etc/my.cnf 
 
 WORKDIR $OEM_DIR
 
@@ -172,23 +177,8 @@ RUN set -x;\
 	echo "    Require all granted" >> $HTTP_CONF;\
 	echo "</Directory>" >> $HTTP_CONF
 
-# mariadb conf
-# cf https://stackoverflow.com/questions/68578758
-# openrc is the apk package to use rc-service
-# we remove it at the end of the run but it is a small package
+# emoncms modules
 RUN set -x;\
-	apk add --no-cache openrc;\
-	rc-update add mariadb;\
-	mkdir -p /run/openrc; \
-	touch /run/openrc/softlevel; \
-	/sbin/openrc 2>/dev/unll;\
-	mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');";\
-	mysql -e "DELETE FROM mysql.user WHERE User='';";\
-	mysql -e "DROP DATABASE IF EXISTS test;";\
-	mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'; FLUSH PRIVILEGES;";\
-	mysql -e "CREATE DATABASE $MYSQL_DATABASE DEFAULT CHARACTER SET utf8;";\
-	mysql -e "CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';";\
-	mysql -e "GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost'; flush privileges;";\
 	make module name=graph;\
 	make module name=dashboard;\
 	make symodule name=sync;\
@@ -210,10 +200,7 @@ RUN set -x;\
 	# removing all trailing sudo instructions in Trystan shell scripts....
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-import.sh;\
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-export.sh;\
-	sed -i 's/sudo //' $EMONCMS_DIR/modules/sync/emoncms-sync.sh;\
-	# recovering some space
-	apk del --no-cache openrc;\
-	rm -Rf /run/openrc
+	sed -i 's/sudo //' $EMONCMS_DIR/modules/sync/emoncms-sync.sh
 
 # redis and mosquitto conf : simple
 # build-base is required to compile with gcc
@@ -241,14 +228,24 @@ RUN set -x;\
 	printf "extension=mosquitto.so" | tee $PHP_CONF/mosquitto.ini 1>&2;\
 	apk del --no-cache build-base mosquitto-dev;\
 	apk del --no-cache py3-pip php$PHP_VER-dev;\
-	# this will remove sources pour phpredis and Mosquitto-PHP
+	# this will remove sources for phpredis and Mosquitto-PHP
 	rm -Rf $OEM_DIR/phpredis
+
+COPY sql_ready.sh .
 
 # user2 level services = workers
 RUN set -x;\
+	# check if SQL is fully ready with a oneshot service
+	mkdir $S6_DIR/sql_ready;\
+	mkdir $S6_DIR/sql_ready/dependencies.d;\
+	touch $S6_DIR/sql_ready/dependencies.d/legacy-services;\
+	echo "oneshot" > $S6_DIR/sql_ready/type;\
+	echo "$OEM_DIR/sql_ready.sh" > $S6_DIR/sql_ready/up;\
+	touch $S6_DIR/user2/contents.d/sql_ready;\
+	# all the long running workers start after sql_ready
 	for i in $SECONDOS; do mkdir $S6_DIR/$i; done;\
 	for i in $SECONDOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
-	for i in $SECONDOS; do touch $S6_DIR/$i/dependencies.d/legacy-services; done;\
+	for i in $SECONDOS; do touch $S6_DIR/$i/dependencies.d/sql_ready; done;\
 	for i in $SECONDOS; do touch $S6_DIR/user2/contents.d/$i; done;\
 	for i in $SECONDOS; do echo "longrun" > $S6_DIR/$i/type; done;\
 	for i in $SECONDOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
@@ -261,7 +258,12 @@ RUN set -x;\
 	#chown $DAEMON $OEM_DIR;\
 	chown -R $DAEMON $WWW/emoncms;\
 	chown -R $DAEMON $EMONCMS_DIR;\
-	chmod +x emoncms_pre.sh
+	chmod +x emoncms_pre.sh;\
+	chmod +x sql_ready.sh
+
+# this is necessary as we launch mysql_install_db at startup
+ENV S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
+ENV S6_SERVICES_GRACETIME=18000
 
 EXPOSE 80 1883
 
