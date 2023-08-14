@@ -33,10 +33,10 @@ Several attempts to port emoncms to container architecture are worth mentioning 
 
 if you want to try a local build on a x86_64 linux machine and don't have buildx installed, the `TARGETPLATFORM` global var will not be accessible
 
-To build the alpine image :
+To build the alpine persistent image :
 
 ```
-docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:alpine3.16 emoncms/alpine/.
+docker build --build-arg="TARGETPLATFORM=linux/amd64" -t emoncms:alpine3.16 emoncms/alpine_persistent/.
 ```
 
 Initially working on ubuntu, I switched to alpine to see if it could be possible to produce a smaller image
@@ -60,6 +60,13 @@ on a ***wired*** machine, start emoncms :
 ```
 docker run --rm -p 8081:80 -p 7883:1883 -it emoncms:alpine3.16
 ```
+
+if you want persistent datas, create a folder named data on the host and start emoncms with a volume :
+
+```
+docker run --rm -p 8081:80 -p 7883:1883 -v /data:/data -it emoncms:alpine3.16
+```
+
 ## bash connection to the container
 
 on the same machine running the container, start another terminal :
