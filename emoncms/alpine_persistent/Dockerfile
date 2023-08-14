@@ -7,15 +7,14 @@ ARG S6_DIR=/etc/s6-overlay/s6-rc.d
 
 ENV TZ="Europe/Paris"
 
-# the sql database and the timeseries will be in /data
+# the sql database and the timeseries will be in /data/emoncms but it can be changed
 # we start with the sql database
 # DAEMON is the user running the workers
 # it must be the same as the one running the webserver
 # on alpine, httpd user is apache and not www-data
 ENV \
 	DAEMON=apache \
-	DATA=/data \
-	EMONCMS_DATADIR=/var/opt/emoncms \
+	EMONCMS_DATADIR=/data/emoncms \
 	TS="phpfina phpfiwa phptimeseries" \
 	MYSQL_DATABASE=emoncms \
 	MYSQL_USER=emoncms \
@@ -25,26 +24,26 @@ ENV \
 	WWW=/var/www \
 	OEM_DIR=/opt/openenergymonitor \
 	EMONCMS_DIR=/opt/emoncms \
-	EMONCMS_LOG_LOCATION=/var/log/emoncms
+	EMONCMS_LOG_LOCATION=/var/log/emoncms \
+	# PHP_VER needed to install the php-dev apk package and for the path to PHP CONF/INI files
+	PHP_VER=8 \
+	# we dont modify php.ini, we create new extensions in conf.d
+	PHP_CONF=/etc/php8/conf.d
 
-RUN mkdir -p $DATA
+# /data creation
+RUN mkdir -p /data
 
 ARG \
 	PRIMOS="apache2 redis mosquitto mariadb" \
-	SECONDOS="emoncms_mqtt service-runner feedwriter"
-
-ARG HTTP_CONF=/etc/apache2/httpd.conf
-ARG MQTT_CONF=/etc/mosquitto/mosquitto.conf
-ARG REDIS_CONF=/etc/redis.conf
-# we could do PHP_VER=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1 -d".") in each RUN
-# we need PHP_VER to install the php-dev apk package and for the path to PHP CONF/INI files
-ARG PHP_VER=8
-# we dont modify php.ini, we create new extensions in conf.d
-ARG PHP_CONF=/etc/php8/conf.d
-# source for Mosquitto-PHP extension
-# original repo is https://github.com/mgdm/Mosquitto-PHP
-# but it does not work for php8
-ARG MOSQUITTO_PHP=https://github.com/openenergymonitor/Mosquitto-PHP
+	SECONDOS="emoncms_mqtt service-runner feedwriter" \
+	HTTP_CONF=/etc/apache2/httpd.conf \
+	MQTT_CONF=/etc/mosquitto/mosquitto.conf \
+	REDIS_CONF=/etc/redis.conf \
+	# source for Mosquitto-PHP extension
+	# original repo is https://github.com/mgdm/Mosquitto-PHP
+	# but it does not work for php8
+	MOSQUITTO_PHP=https://github.com/openenergymonitor/Mosquitto-PHP \
+	EMONCMS_SRC=https://github.com/emoncms/emoncms
 
 RUN apk update && apk upgrade
 
@@ -76,31 +75,7 @@ RUN set -x;\
 	tar -C / -Jxpf /tmp/s6-overlay-$S6_ARCH.tar.xz;\
 	tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
 
-# if s6-overlay is installed via apk, use bin and not command for execlineb !!
-# cf https://github.com/just-containers/s6-overlay/issues/449
-RUN set -x;\
-	# initializing timeseries and mariadb with a oneshot service called emoncms_pre
-	mkdir $S6_DIR/emoncms_pre;\
-	mkdir $S6_DIR/emoncms_pre/dependencies.d;\
-	touch $S6_DIR/emoncms_pre/dependencies.d/base;\
-	echo "oneshot" > $S6_DIR/emoncms_pre/type;\
-	echo "$OEM_DIR/emoncms_pre.sh" > $S6_DIR/emoncms_pre/up;\
-	touch $S6_DIR/user/contents.d/emoncms_pre;\
-	# starting primo services after emoncms_pre
-	for i in $PRIMOS; do mkdir $S6_DIR/$i; done;\
-	for i in $PRIMOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
-	for i in $PRIMOS; do touch $S6_DIR/$i/dependencies.d/emoncms_pre; done;\
-	for i in $PRIMOS; do touch $S6_DIR/user/contents.d/$i; done;\
-	for i in $PRIMOS; do echo "longrun" > $S6_DIR/$i/type; done;\
-	for i in $PRIMOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
-	echo "/usr/sbin/httpd -D FOREGROUND" >> $S6_DIR/apache2/run;\
-	echo "redis-server $REDIS_CONF" >> $S6_DIR/redis/run;\
-	echo "mosquitto -c $MQTT_CONF" >> $S6_DIR/mosquitto/run;\
-	echo "s6-setuidgid mysql" >> $S6_DIR/mariadb/run;\
-	echo "mysqld --datadir=$DATA/mysql" >> $S6_DIR/mariadb/run
-
 # creating folders, setting permissions and cloning emoncms sources
-# emoncms_pre.sh oneshot service initializes at startup timeseries folders and mariadb
 RUN set -x;\
 	mkdir -p $OEM_DIR;\
 	mkdir -p $EMONCMS_LOG_LOCATION;\
@@ -112,18 +87,14 @@ RUN set -x;\
 	chown $DAEMON /var/lock;\
 	# needed for the backup module when importing a tar.gz
 	chown $DAEMON /tmp;\
-	cd $WWW && git clone -b stable https://github.com/emoncms/emoncms.git;\
+	cd $WWW && git clone -b stable $EMONCMS_SRC;\
 	rm -Rf $WWW/emoncms/docs;\
 	mkdir -p /run/mysqld;\
-	chown -R mysql:mysql /run/mysqld;\
-	mv /etc/my.cnf /etc/my.old;\
-	echo "[mysqld]" >> /etc/my.cnf;\
-	echo "datadir=$DATA/mysql" >> /etc/my.cnf 
+	chown -R mysql:mysql /run/mysqld
 
 WORKDIR $OEM_DIR
 
 COPY makefile .
-COPY emoncms_pre.sh .
 
 # apache2/emoncms conf
 RUN set -x;\
@@ -134,35 +105,6 @@ RUN set -x;\
 	git config --system --replace-all safe.directory '*';\
 	git clone https://github.com/openenergymonitor/EmonScripts;\
 	cp EmonScripts/install/emonsd.config.ini EmonScripts/install/config.ini;\
-	echo "emoncms_dir = '$EMONCMS_DIR'" > settings.ini;\
-	echo "openenergymonitor_dir = '$OEM_DIR'" >> settings.ini;\
-	echo "[sql]" >> settings.ini;\
-	echo "server = 'localhost'" >> settings.ini;\
-	echo "database = '$MYSQL_DATABASE'" >> settings.ini;\
-	echo "username = '$MYSQL_USER'" >> settings.ini;\
-	echo "password = '$MYSQL_PASSWORD'" >> settings.ini;\
-	echo "dbtest   = true" >> settings.ini;\
-	echo "[redis]" >> settings.ini;\
-	echo "enabled = true" >> settings.ini;\
-	echo "prefix = ''" >> settings.ini;\
-	echo "[mqtt]" >> settings.ini;\
-	echo "enabled = true" >> settings.ini;\
-	echo "user = '$MQTT_USER'" >> settings.ini;\
-	echo "password = '$MQTT_PASSWORD'" >> settings.ini;\
-	echo "[feed]" >> settings.ini;\
-	echo "engines_hidden = [0,6,10]" >> settings.ini;\
-	echo "redisbuffer[enabled] = true" >> settings.ini;\
-	echo "redisbuffer[sleep] = 300" >> settings.ini;\
-	echo "phpfina[datadir] = '$EMONCMS_DATADIR/phpfina/'" >> settings.ini;\
-	echo "phptimeseries[datadir] = '$EMONCMS_DATADIR/phptimeseries/'" >> settings.ini;\
-	echo "[interface]" >> settings.ini;\
-	echo "enable_admin_ui = true" >> settings.ini;\
-	echo "feedviewpath = 'graph/'" >> settings.ini;\
-	echo "favicon = 'favicon_emonpi.png'" >> settings.ini;\
-	echo "[log]" >> settings.ini;\
-	echo "; Log Level: 1=INFO, 2=WARN, 3=ERROR" >> settings.ini;\
-	echo "level = 2" >> settings.ini;\
-	cp settings.ini $WWW/emoncms/settings.ini;\
 	sed -i 's/^#ServerName.*/ServerName localhost/' $HTTP_CONF;\
 	sed -i '/LoadModule rewrite_module/s/^#//g' $HTTP_CONF;\
 	#sed -i 's/^#LoadModule rewrite/LoadModule rewrite/' $HTTP_CONF;\
@@ -184,19 +126,7 @@ RUN set -x;\
 	make symodule name=sync;\
 	make symodule name=postprocess;\
 	make symodule name=backup;\
-	# backup and sync configuration
-	echo "user=$DAEMON" > config.cfg;\
-	echo "backup_script_location=$EMONCMS_DIR/modules/backup" >> config.cfg;\
-	echo "emoncms_location=$WWW/emoncms" >> config.cfg;\
-	echo "backup_location=$EMONCMS_DATADIR/backup" >> config.cfg;\
-	echo "database_path=$EMONCMS_DATADIR" >> config.cfg;\
-	echo "emonhub_config_path=" >> config.cfg;\
-	echo "emonhub_specimen_config=" >> config.cfg;\
-	echo "backup_source_path=$EMONCMS_DATADIR/backup/uploads" >> config.cfg;\ 
-	cp config.cfg $EMONCMS_DIR/modules/backup/config.cfg;\
-	echo "post_max_size=3G" > $PHP_CONF/backup.ini;\
-	echo "upload_max_filesize=3G" >> $PHP_CONF/backup.ini;\
-	echo "upload_tmp_dir=$EMONCMS_DATADIR/backup/uploads" >> $PHP_CONF/backup.ini;\
+	# backup and sync
 	# removing all trailing sudo instructions in Trystan shell scripts....
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-import.sh;\
 	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-export.sh;\
@@ -220,9 +150,8 @@ RUN set -x;\
 	echo "allow_anonymous false" >> $MQTT_CONF;\
 	echo "listener 1883" >> $MQTT_CONF;\
 	echo "password_file /etc/mosquitto/passwd" >> $MQTT_CONF;\
+	echo "log_dest stdout" >> $MQTT_CONF;\
 	echo "#log_type error" >> $MQTT_CONF;\
-	touch /etc/mosquitto/passwd;\
-	mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD;\
 	git clone $MOSQUITTO_PHP;\
 	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
 	printf "extension=mosquitto.so" | tee $PHP_CONF/mosquitto.ini 1>&2;\
@@ -231,7 +160,32 @@ RUN set -x;\
 	# this will remove sources for phpredis and Mosquitto-PHP
 	rm -Rf $OEM_DIR/phpredis
 
+COPY emoncms_pre.sh .
 COPY sql_ready.sh .
+
+# if s6-overlay is installed via apk, use bin and not command for execlineb !!
+# cf https://github.com/just-containers/s6-overlay/issues/449
+RUN set -x;\
+	# initialize timeseries and mariadb with a oneshot service called emoncms_pre
+	mkdir $S6_DIR/emoncms_pre;\
+	mkdir $S6_DIR/emoncms_pre/dependencies.d;\
+	touch $S6_DIR/emoncms_pre/dependencies.d/base;\
+	echo "oneshot" > $S6_DIR/emoncms_pre/type;\
+	echo "$OEM_DIR/emoncms_pre.sh" > $S6_DIR/emoncms_pre/up;\
+	touch $S6_DIR/user/contents.d/emoncms_pre;\
+	# start primo services after emoncms_pre
+	for i in $PRIMOS; do mkdir $S6_DIR/$i; done;\
+	for i in $PRIMOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
+	for i in $PRIMOS; do touch $S6_DIR/$i/dependencies.d/emoncms_pre; done;\
+	for i in $PRIMOS; do touch $S6_DIR/user/contents.d/$i; done;\
+	for i in $PRIMOS; do echo "longrun" > $S6_DIR/$i/type; done;\
+	for i in $PRIMOS; do echo "#!/command/execlineb -P" > $S6_DIR/$i/run; done;\
+	echo "/usr/sbin/httpd -D FOREGROUND" >> $S6_DIR/apache2/run;\
+	echo "redis-server $REDIS_CONF" >> $S6_DIR/redis/run;\
+	echo "mosquitto -c $MQTT_CONF" >> $S6_DIR/mosquitto/run;\
+	echo "s6-setuidgid mysql" >> $S6_DIR/mariadb/run;\
+	# use mysqld_safe if you want no verbosity on stdout
+	echo "mysqld" >> $S6_DIR/mariadb/run
 
 # user2 level services = workers
 RUN set -x;\
@@ -242,7 +196,7 @@ RUN set -x;\
 	echo "oneshot" > $S6_DIR/sql_ready/type;\
 	echo "$OEM_DIR/sql_ready.sh" > $S6_DIR/sql_ready/up;\
 	touch $S6_DIR/user2/contents.d/sql_ready;\
-	# all the long running workers start after sql_ready
+	# start all long running workers after sql_ready
 	for i in $SECONDOS; do mkdir $S6_DIR/$i; done;\
 	for i in $SECONDOS; do mkdir $S6_DIR/$i/dependencies.d; done;\
 	for i in $SECONDOS; do touch $S6_DIR/$i/dependencies.d/sql_ready; done;\
