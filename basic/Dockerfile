@@ -9,7 +9,7 @@ ENV TZ="Europe/Paris"
 
 ENV EMONCMS_DATADIR=/var/opt/emoncms
 
-RUN apk update && apk upgrade && apk add nano
+RUN apk update && apk upgrade && apk add nano make
 
 RUN set -x;\
 	case $TARGETPLATFORM in \
@@ -26,6 +26,8 @@ ARG ONE_SHOT=foo
 
 COPY script.sh .
 
+COPY makefile .
+
 # making a one shot service named foo
 RUN set -x;\
 	mkdir $S6_DIR/$ONE_SHOT;\
@@ -34,6 +36,7 @@ RUN set -x;\
 	echo "oneshot" > $S6_DIR/$ONE_SHOT/type;\
 	echo "/script.sh" > $S6_DIR/$ONE_SHOT/up;\
 	touch $S6_DIR/user/contents.d/$ONE_SHOT;\
-	chmod +x script.sh
+	chmod +x script.sh;\
+	make test
 
 ENTRYPOINT ["/init"]
