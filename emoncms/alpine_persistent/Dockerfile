@@ -126,11 +126,15 @@ RUN set -x;\
 	make symodule name=sync;\
 	make symodule name=postprocess;\
 	make symodule name=backup;\
-	# backup and sync
+	# backup, sync and postprocess
 	# removing all trailing sudo instructions in Trystan shell scripts....
-	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-import.sh;\
-	sed -i 's/sudo //' $EMONCMS_DIR/modules/backup/emoncms-export.sh;\
-	sed -i 's/sudo //' $EMONCMS_DIR/modules/sync/emoncms-sync.sh
+	cd $EMONCMS_DIR/modules;\
+	sed -i 's/sudo //' backup/emoncms-import.sh;\
+	sed -i 's/sudo //' backup/emoncms-export.sh;\
+	sed -i 's/sudo //' sync/emoncms-sync.sh;\
+	sed -i 's/sudo //' postprocess/postprocess.sh;\
+	cd $EMONCMS_DIR/modules/postprocess/postprocess-module;\
+	sed -i 's/return $service_running/return true/' postprocess_model.php
 
 # redis and mosquitto conf : simple
 # build-base is required to compile with gcc
