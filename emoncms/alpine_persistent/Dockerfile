@@ -47,7 +47,7 @@ ARG \
 
 RUN apk update && apk upgrade
 
-RUN apk add --no-cache tzdata xz bash git make;\
+RUN apk add --no-cache tzdata xz bash git make tar;\
 	apk add --no-cache sed nano;\
 	apk add --no-cache python3;\
 	apk add --no-cache ca-certificates wget;\
