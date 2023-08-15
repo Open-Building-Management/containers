@@ -1,4 +1,4 @@
-name: emoncms docker images to docker hub
+name: themis docker images to docker hub
 
 on:
   workflow_dispatch:
