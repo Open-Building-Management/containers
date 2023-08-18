@@ -1,9 +1,10 @@
 FROM alpine:3.16
 
-ARG TARGETPLATFORM
-ARG S6_OVERLAY_VERSION=3.1.5.0
-ARG S6_SRC=https://github.com/just-containers/s6-overlay/releases/download
-ARG S6_DIR=/etc/s6-overlay/s6-rc.d
+ARG \
+	TARGETPLATFORM \
+	S6_OVERLAY_VERSION=3.1.5.0 \
+	S6_SRC=https://github.com/just-containers/s6-overlay/releases/download \
+	S6_DIR=/etc/s6-overlay/s6-rc.d
 
 ENV TZ="Europe/Paris"
 
@@ -164,8 +165,26 @@ RUN set -x;\
 	# this will remove sources for phpredis and Mosquitto-PHP
 	rm -Rf $OEM_DIR/phpredis
 
-COPY emoncms_pre.sh .
-COPY sql_ready.sh .
+COPY emoncms_pre.sh sql_ready.sh ./
+
+# we create dynamically the database update script 
+# as it uses the $WWW env which will not be available at run time in php 
+RUN set -x;\
+	echo "<?php" > emoncmsdbupdate.php;\
+	echo "\$applychanges = true;" >> emoncmsdbupdate.php;\
+	echo "define('EMONCMS_EXEC', 1);" >> emoncmsdbupdate.php;\
+	echo "chdir('$WWW/emoncms');" >> emoncmsdbupdate.php;\
+	echo "require 'process_settings.php';" >> emoncmsdbupdate.php;\
+	echo "require 'core.php';" >> emoncmsdbupdate.php;\
+	echo "\$mysqli = @new mysqli(" >> emoncmsdbupdate.php;\
+	echo "    \$ssettings['sql']['server']," >> emoncmsdbupdate.php;\
+	echo "    \$settings['sql']['username']," >> emoncmsdbupdate.php;\
+	echo "    \$settings['sql']['password']," >> emoncmsdbupdate.php;\
+	echo "    \$settings['sql']['database']," >> emoncmsdbupdate.php;\
+	echo "    \$settings['sql']['port']" >> emoncmsdbupdate.php;\
+	echo ");" >> emoncmsdbupdate.php;\
+	echo "require_once 'Lib/dbschemasetup.php';" >> emoncmsdbupdate.php;\
+	echo "print json_encode(db_schema_setup(\$mysqli,load_db_schema(),\$applychanges)).'\n';" >> emoncmsdbupdate.php
 
 # if s6-overlay is installed via apk, use bin and not command for execlineb !!
 # cf https://github.com/just-containers/s6-overlay/issues/449
