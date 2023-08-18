@@ -1,3 +1,7 @@
+**tensorflow lite wheels are available via pip on aarch64, amd64 and arm/v7**
+
+https://www.tensorflow.org/lite/guide/python
+
 # FOR DEV
 
 run the themis version of emoncms :
