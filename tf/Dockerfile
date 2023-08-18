@@ -12,7 +12,8 @@ RUN apt-get -y update;\
     python3 -m pip install --no-cache-dir requests;\
     python3 -m pip install --no-cache-dir tflite-runtime;\
     apt-get purge -y --auto-remove python3-pip;\
-    apt-get clean;\
-    echo "import tflite_runtime.interpreter as tflite" >> test.py
+    apt-get clean
 
-CMD ["python3", "test.py"]
+COPY test.py .
+
+CMD [ "python3", "test.py"]
