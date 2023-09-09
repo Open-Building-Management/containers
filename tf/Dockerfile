@@ -1,4 +1,5 @@
-FROM ubuntu:22.04
+ARG BUILD_FROM=ubuntu:22.04
+FROM $BUILD_FROM
 
 RUN apt-get -y update;\
     apt-get -y upgrade;\
