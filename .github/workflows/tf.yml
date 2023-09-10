@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os_version: 
-          - ubuntu:20.04
-          - ubuntu:22.04
+        ubuntu_version: 
+          - 20.04
+          - 22.04
     steps:
       -
         name: Checkout
@@ -33,6 +33,6 @@ jobs:
         with:
           context: tf/.
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          build-args: BUILD_FROM=${{ matrix.os_version }}
+          build-args: BUILD_FROM=ubuntu:${{ matrix.ubuntu_version }}
           push: true
-          tags: alexjunk/tf:${{ matrix.os_version }}
+          tags: alexjunk/tf:ubuntu${{ matrix.ubuntu_version }}
