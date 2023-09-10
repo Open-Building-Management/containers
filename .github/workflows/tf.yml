@@ -6,6 +6,9 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os_version: ["ubuntu:20.04", "ubuntu:22.04"]
     steps:
       -
         name: Checkout
@@ -28,5 +31,6 @@ jobs:
         with:
           context: tf/.
           platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: BUILD_FROM=${{ os_version }}
           push: true
-          tags: alexjunk/tf:ubuntu22.04
+          tags: alexjunk/tf:${{ os_version }}
