@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os_version: ["ubuntu:20.04", "ubuntu:22.04"]
+        os_version: 
+          - ubuntu:20.04
+          - ubuntu:22.04
     steps:
       -
         name: Checkout
