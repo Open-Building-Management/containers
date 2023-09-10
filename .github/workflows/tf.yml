@@ -31,6 +31,6 @@ jobs:
         with:
           context: tf/.
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          build-args: BUILD_FROM=${{ os_version }}
+          build-args: BUILD_FROM=${{ matrix.os_version }}
           push: true
-          tags: alexjunk/tf:${{ os_version }}
+          tags: alexjunk/tf:${{ matrix.os_version }}
