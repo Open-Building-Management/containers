@@ -19,5 +19,3 @@ RUN apt-get -y update;\
     apt-get clean
 
 COPY test.py .
-
-CMD [ "python3", "test.py"]
