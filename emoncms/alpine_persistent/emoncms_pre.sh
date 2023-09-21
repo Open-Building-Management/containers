@@ -31,6 +31,15 @@ mv /etc/my.cnf /etc/my.old
 echo "[mysqld]" >> /etc/my.cnf
 echo "datadir=$EMONCMS_DATADIR/mysql" >> /etc/my.cnf
 
+echo "CREATING MQTT CONF"
+echo "persistence false" >> $MQTT_CONF
+echo "allow_anonymous false" >> $MQTT_CONF
+echo "listener 1883" >> $MQTT_CONF
+echo "password_file /etc/mosquitto/passwd" >> $MQTT_CONF
+echo "log_dest stdout" >> $MQTT_CONF
+echo "log_timestamp_format %Y-%m-%dT%H:%M:%S" >> $MQTT_CONF
+echo "log_type $MQTT_LOG_LEVEL" >> $MQTT_CONF
+
 echo "GENERATING EMONCMS SETTINGS.INI"
 echo "emoncms_dir = '$EMONCMS_DIR'" > settings.ini
 echo "openenergymonitor_dir = '$OEM_DIR'" >> settings.ini
@@ -45,6 +54,7 @@ echo "enabled = true" >> settings.ini
 echo "prefix = ''" >> settings.ini
 echo "[mqtt]" >> settings.ini
 echo "enabled = true" >> settings.ini
+echo "host = '$MQTT_HOST'" >> settings.ini
 echo "user = '$MQTT_USER'" >> settings.ini
 echo "password = '$MQTT_PASSWORD'" >> settings.ini
 echo "[feed]" >> settings.ini
