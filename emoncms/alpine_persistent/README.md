@@ -13,3 +13,15 @@ Using environnement variables, emoncms_pre.sh generates at startup the following
 - backup.ini PHP extension
 
 Even if mariadb tables initialisation is done when the first user is created, as we are going to use something like docker compose, we need the database structure to be created before, and so we still use emoncmsdbupdate.php
+
+## changelog
+
+solving timezone problem with the command `cp /usr/share/zoneinfo/$TZ /etc/localtime` in emoncms_pre
+
+possibility to modulate mqtt log level :
+
+```
+docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL="error warning information notice" themis:alpine3.16
+docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL=notice themis:alpine3.16
+```
+

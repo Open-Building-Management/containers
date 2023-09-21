@@ -1,5 +1,7 @@
 #!/command/with-contenv sh
 
+cp /usr/share/zoneinfo/$TZ /etc/localtime
+
 NEW_INSTALL=0
 
 if ! [ -d "$EMONCMS_DATADIR" ]; then
@@ -38,7 +40,7 @@ echo "listener 1883" >> $MQTT_CONF
 echo "password_file /etc/mosquitto/passwd" >> $MQTT_CONF
 echo "log_dest stdout" >> $MQTT_CONF
 echo "log_timestamp_format %Y-%m-%dT%H:%M:%S" >> $MQTT_CONF
-echo "log_type $MQTT_LOG_LEVEL" >> $MQTT_CONF
+for level in $MQTT_LOG_LEVEL; do echo "log_type $level" >> $MQTT_CONF; done;
 
 echo "GENERATING EMONCMS SETTINGS.INI"
 echo "emoncms_dir = '$EMONCMS_DIR'" > settings.ini
