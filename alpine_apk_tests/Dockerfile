@@ -3,7 +3,7 @@ ARG BUILD_FROM=alpine:3.18
 FROM $BUILD_FROM
 
 ENV \
-	PHP_VER=82 \
+	PHP_VER=81 \
 	TZ="Europe/Paris"
 
 RUN apk update && apk upgrade
