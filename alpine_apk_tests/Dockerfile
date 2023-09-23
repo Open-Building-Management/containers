@@ -18,6 +18,6 @@ RUN apk add --no-cache tzdata xz bash git make tar;\
 	apk add --no-cache mosquitto;\
 	apk add --no-cache php php-gettext php-apache2 php-mysqli;\
 	apk add --no-cache php-gd php-curl php-common php-mbstring;\
-	apk add --no-cache php-session php-ctype
+	apk add --no-cache php-session php-ctype;\
 	apk add --no-cache build-base mosquitto-dev;\
 	apk add --no-cache py3-pip php$PHP_VER-dev
