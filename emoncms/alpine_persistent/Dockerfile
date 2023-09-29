@@ -1,4 +1,6 @@
-FROM alpine:3.16
+ARG BUILD_FROM=alpine:3.16
+
+FROM $BUILD_FROM
 
 ARG \
 	TARGETPLATFORM \
@@ -26,10 +28,6 @@ ENV \
 	OEM_DIR=/opt/openenergymonitor \
 	EMONCMS_DIR=/opt/emoncms \
 	EMONCMS_LOG_LOCATION=/var/log/emoncms \
-	# PHP_VER needed to install the php-dev apk package and for the path to PHP CONF/INI files
-	PHP_VER=8 \
-	# we dont modify php.ini, we create new extensions in conf.d
-	PHP_CONF=/etc/php8/conf.d \
 	MQTT_CONF=/etc/mosquitto/mosquitto.conf \
 	MQTT_HOST=localhost \
 	MQTT_LOG_LEVEL=error
@@ -40,7 +38,11 @@ RUN mkdir -p /data
 ARG \
 	PRIMOS="apache2 redis mosquitto mariadb" \
 	SECONDOS="emoncms_mqtt service-runner feedwriter" \
-	HTTP_CONF=/etc/apache2/httpd.conf \
+ 	HTTP_CONF=/etc/apache2/httpd.conf \
+ 	# PHP_VER needed to install the php-dev apk package and for the path to PHP CONF/INI files
+	PHP_VER=8 \
+	# we dont modify php.ini, we create new extensions in conf.d
+	PHP_CONF=/etc/php8/conf.d \
 	REDIS_CONF=/etc/redis.conf \
 	# source for Mosquitto-PHP extension
 	# original repo is https://github.com/mgdm/Mosquitto-PHP
