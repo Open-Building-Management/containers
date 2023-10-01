@@ -14,7 +14,7 @@ Using environnement variables, emoncms_pre.sh generates at startup the following
 
 Even if mariadb tables initialisation is done when the first user is created, as we are going to use something like docker compose, we need the database structure to be created before, and so we still use emoncmsdbupdate.php
 
-Some ENV vars are both used during buildtime and during runtime
+## Some ENV vars are both used during buildtime and during runtime
 
 ENV|Dockerfile|makefile (used during build)|emoncms_pre|mysql_ready|ARG
 --|--|--|--|--|--
