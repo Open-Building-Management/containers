@@ -37,7 +37,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
             "EMONCMS_SRC=https://github.com/alexandrecuer/emoncms"
-            "BUILD_FROM=alpine:${{ alpine_version }}"
+            "BUILD_FROM=alpine:${{ matrix.alpine_version }}"
             "PHP_VER={{ matrix.php_version }}"
             "PHP_CONF=/etc/php{{ matrix.php_version }}/conf.d"
           push: true
