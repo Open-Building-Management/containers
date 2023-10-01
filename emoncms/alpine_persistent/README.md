@@ -16,6 +16,18 @@ Even if mariadb tables initialisation is done when the first user is created, as
 
 ## changelog
 
+### 29/09/2023
+
+adding ARG BUILD_FROM
+
+defining PHP_VER and PHP_CONF as ARG and no more as ENV, so we can modulate themPHP_VER and PHP_CONF during build, in order to be able to build for alpine:3.18 without changing anything
+
+```
+docker build -t emoncms:alpine3.18 --build-arg="BUILD_FROM=alpine:3.18" --build-arg="TARGETPLATFORM=linux/amd64" --build-arg="PHP_VER=81" --build-arg="PHP_CONF=/etc/php81/conf.d" .
+```
+
+### 21/09/2023
+
 solving timezone problem with the command `cp /usr/share/zoneinfo/$TZ /etc/localtime` in emoncms_pre
 
 possibility to modulate mqtt log level :
