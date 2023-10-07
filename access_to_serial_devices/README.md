@@ -23,7 +23,7 @@ sudo docker run --rm --device-cgroup-rule='c 204:* rmw' --device-cgroup-rule='c 
 ```
 we assume you have got some scripts in the current folder, you want to mount them in the container as /bios
 
-to understand the cgroup rules : 
+to check the major numbers of our devices  : 
 ```
 ls -al /dev/ttyAMA*
 crw-rw-rw- 1 root dialout 204, 64 Oct  7 15:30 /dev/ttyAMA0
@@ -42,3 +42,10 @@ ttyAMA devices are permanently attached, so you can utilize the docker device op
 ```
 sudo docker run --rm -v $(pwd):/bios --device=/dev/ttyAMA0 -it emonhub sh
 ```
+# about capabilities
+
+not of any use here but worth mentionning
+
+https://stackoverflow.com/questions/30905674/newer-versions-of-docker-have-cap-add-what-caps-can-be-added
+
+https://man7.org/linux/man-pages/man7/capabilities.7.html
