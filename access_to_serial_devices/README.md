@@ -11,7 +11,7 @@ https://developers.home-assistant.io/docs/operating-system/debugging/
 once you are connected with `ssh root@homeassistant.local -p 22222`, edit the `/mnt/boot/config.txt` and add the following lines at the end :
 
 ```
-[All]
+[all]
 dtoverlay=disable-bt
 ```
 
