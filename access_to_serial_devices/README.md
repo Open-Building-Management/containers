@@ -1,3 +1,20 @@
+# good to know
+
+On a pi, bluetooth is `/dev/ttyAMA0`, so if you want to use emonPi or RFM69Pi cards attached to the gpio, you will have to disable bluetooth if running an SD card written with the following HA process :
+
+https://www.home-assistant.io/installation/raspberrypi#writing-the-image-with-balena-etcher
+
+Disabling bluetooth requires an ssh superuser connection, that you can establish like detailed here :
+
+https://developers.home-assistant.io/docs/operating-system/debugging/
+
+once you are connected with `ssh root@homeassistant.local -p 22222`, edit the `/mnt/boot/config.txt` and add the following lines at the end :
+
+```
+[All]
+dtoverlay=disable-bt
+```
+
 # on the web
 
 https://www.losant.com/blog/how-to-access-serial-devices-in-docker
