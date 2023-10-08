@@ -42,6 +42,12 @@ ttyAMA devices are permanently attached, so you can utilize the docker device op
 ```
 sudo docker run --rm -v $(pwd):/bios --device=/dev/ttyAMA0 -it emonhub sh
 ```
+# publish datas on the broker host
+
+this is not a real use case, but if you want to publish datas read through serial on a broker running on the host :
+```
+sudo docker run --rm --network host -v $(pwd):/bios --device=/dev/ttyAMA0 -it emonhub sh
+```
 # about capabilities
 
 not of any use here but worth mentionning
