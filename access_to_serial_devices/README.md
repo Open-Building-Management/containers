@@ -32,7 +32,7 @@ sudo nano /etc/udev/rules.d/999-serial.rules
 and add the following rules :
 ```
 KERNEL=="ttyUSB[0-19]*",MODE="0666"
-KERNEK=="ttyAMA[0-9]*",MODE="0666"
+KERNEL=="ttyAMA[0-9]*",MODE="0666"
 ```
 if you want to run a docker image named emonhub with access to the serial, just do :
 ```
