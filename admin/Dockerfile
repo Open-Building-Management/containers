@@ -16,7 +16,7 @@ RUN set -x;\
 	python3 -m pip install cython==0.29.32;\
 	python3 -m pip install --no-cache-dir flask docker;\
 	python3 -m pip install --no-cache-dir mysql-connector-python redis;\
-	# the pip installer is not working for arm/v7
+	# the following is not working as there is no wheel on pypi for arm/v7
  	#python3 -m pip3 install --no-cache-dir numpy;\
 	wget $GITHUB_REPO/v$NP_VERSION/numpy-$NP_VERSION.tar.gz;\
 	tar -xvf *.tar.gz;\
