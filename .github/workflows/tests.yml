@@ -20,7 +20,8 @@ jobs:
       - name: testing...
         run: |
           wget https://raw.githubusercontent.com/emoncms/emoncms/master/version.json
-          cat version.json | jq '.version'
+          master_version=$(cat version.json | jq '.version')
+          echo "::set-output name=matrix.master_version::${master_version//'%'/'%25'}"
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
