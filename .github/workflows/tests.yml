@@ -8,13 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
+        emoncms_version: [11.4.2]
+        alpine_version: [3.16, 3.18]
+        php_version: [8, 81]
+        exclude:
         - alpine_version: 3.16
-          php_version: 8
-        - alpine_version: 3.18
           php_version: 81
+        - alpine_version: 3.18
+          php_version: 8
     steps:
       - name: testing...
         run: |
+          echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
