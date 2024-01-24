@@ -18,4 +18,5 @@ jobs:
       - name: testing...
         run: |
           echo ${{ matrix.emoncms_version}}
-          echo "$php_version $matrix.alpine_version"
+          echo ${{ matrix.php_version }}
+          echo ${{ matrix.alpine_version}}
