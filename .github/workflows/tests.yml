@@ -22,7 +22,6 @@ jobs:
           wget https://raw.githubusercontent.com/emoncms/emoncms/master/version.json
           master_version=$(cat version.json | jq '.version')
           echo $master_version
-          echo "master_version=$master_version" >> "$GITHUB_ENV"
       - name: using..
         run: |
           echo $master_version
