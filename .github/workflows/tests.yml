@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: testing...
         run: |
-          jq --version
-          wget --version
+          wget https://raw.githubusercontent.com/emoncms/emoncms/master/version.json
+          cat version.json | jq '.version'
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
