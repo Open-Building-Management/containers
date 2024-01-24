@@ -36,7 +36,7 @@ jobs:
           wget https://raw.githubusercontent.com/alexandrecuer/emoncms/bios_master/version.json
           master=$(cat version.json | jq --raw-output '.version')
           echo $master
-          echo "master=$master_version" >> "$GITHUB_OUTPUT"
+          echo "master=$master" >> "$GITHUB_OUTPUT"
       -
         name: Build and push
         uses: docker/build-push-action@v4
