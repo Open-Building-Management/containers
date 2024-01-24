@@ -25,7 +25,7 @@ jobs:
           echo "master_version=$master_version" >> "$GITHUB_ENV"
       - name: using..
         run: |
-          echo ${{ master_version }}
+          echo $master_version
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
