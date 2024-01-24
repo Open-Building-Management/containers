@@ -30,12 +30,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - 
+        id: emoncms_version
         name: get emoncms version
         run: |
           wget https://raw.githubusercontent.com/alexandrecuer/emoncms/bios_master/version.json
-          master_version=$(cat version.json | jq --raw-output '.version')
-          echo $master_version
-          echo "master_version=$master_version" >> "$GITHUB_ENV"
+          master=$(cat version.json | jq --raw-output '.version')
+          echo $master
+          echo "master=$master_version" >> "$GITHUB_OUTPUT"
       -
         name: Build and push
         uses: docker/build-push-action@v4
@@ -48,4 +49,4 @@ jobs:
             "PHP_VER=${{ matrix.php_version }}"
             "PHP_CONF=/etc/php${{ matrix.php_version }}/conf.d"
           push: true
-          tags: alexjunk/themis${{ master_version }}:alpine${{ matrix.alpine_version }}
+          tags: alexjunk/themis${{ steps.emoncms_version.master }}:alpine${{ matrix.alpine_version }}
