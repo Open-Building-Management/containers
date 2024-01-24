@@ -48,4 +48,4 @@ jobs:
             "PHP_VER=${{ matrix.php_version }}"
             "PHP_CONF=/etc/php${{ matrix.php_version }}/conf.d"
           push: true
-          tags: alexjunk/themis$master_version:alpine${{ matrix.alpine_version }}
+          tags: alexjunk/themis${{ master_version }}:alpine${{ matrix.alpine_version }}
