@@ -17,11 +17,15 @@ jobs:
         - alpine_version: 3.18
           php_version: 8
     steps:
-      - name: testing...
+      - name: fetching version number
         run: |
           wget https://raw.githubusercontent.com/emoncms/emoncms/master/version.json
           master_version=$(cat version.json | jq '.version')
-          echo "::set-output name=matrix.master_version::${master_version//'%'/'%25'}"
-          echo ${{ matrix.master_version }}
+          echo $master_version
+          echo "master_version=$master_version" >> "$GITHUB_ENV"
+      - name: using..
+        run: |
+          echo ${{ master_version }}
+          echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
