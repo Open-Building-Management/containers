@@ -49,4 +49,4 @@ jobs:
             "PHP_VER=${{ matrix.php_version }}"
             "PHP_CONF=/etc/php${{ matrix.php_version }}/conf.d"
           push: true
-          tags: alexjunk/themis${{ steps.emoncms_version.outputs.master }}:alpine${{ matrix.alpine_version }}
+          tags: alexjunk/themis:alpine${{ matrix.alpine_version }}_emoncms${{ steps.emoncms_version.outputs.master }}
