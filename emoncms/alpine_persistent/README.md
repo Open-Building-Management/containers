@@ -67,3 +67,12 @@ docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL="error warning inf
 docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL=notice themis:alpine3.16
 ```
 
+### 31/01/2024
+
+trying to add ssl and https
+
+introduction of 2 new ENV vars : CRT_FILE and KEY_FILE
+
+```
+sudo docker run --rm -p 8081:80 -p 8082:443 -p 7883:1883 -v /etc/ssl/certs/bios:/cert -e CRT_FILE=/cert/alexjunk.crt -e KEY_FILE=/cert/alexjunk.key -it emoncms:alpine3.18
+```
