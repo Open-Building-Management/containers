@@ -26,6 +26,50 @@ fi
 
 cd $OEM_DIR
 
+if [ "$REVERSE_PROXY" -eq 1 ]; then
+    echo "using the container in an app server with a reverse proxy"
+    python3 update_emoncms_core_file.py
+fi
+
+echo "CUSTOMIZING APACHE CONF FOR EMONCMS"
+#CNAME=$(openssl x509 -noout -subject -in $CERT_FILE | sed 's/.*CN = //')
+mv /etc/apache2/conf.d/ssl.conf /etc/apache2/conf.d/ssl.old
+# double quotes in order to use a shell var
+sed -i "s/^#ServerName.*/ServerName $CNAME/" $HTTP_CONF
+sed -i '/LoadModule rewrite_module/s/^#//g' $HTTP_CONF
+#sed -i 's/^#LoadModule rewrite/LoadModule rewrite/' $HTTP_CONF
+# delete between 2 patterns with sed
+# https://techstop.github.io/delete-lines-strings-between-two-patterns-sed/
+#sed -i '/<Directory "\/var\/www\/localhost\/htdocs\">/,/<\/Directory>/d' $HTTP_CONF
+# replace all occurences of localhost/htdocs by emoncms
+sed -i 's/localhost\/htdocs/emoncms/g' $HTTP_CONF
+echo "<VirtualHost *:80>" >> $HTTP_CONF
+#echo "    ServerName $CNAME" >> $HTTP_CONF
+echo "    <Directory $WWW/emoncms>" >> $HTTP_CONF
+echo "        Options FollowSymLinks" >> $HTTP_CONF
+echo "        AllowOverride All" >> $HTTP_CONF
+echo "        DirectoryIndex index.php" >> $HTTP_CONF
+echo "        Require all granted" >> $HTTP_CONF
+echo "    </Directory>" >> $HTTP_CONF
+echo "</VirtualHost>" >> $HTTP_CONF
+echo "LoadModule ssl_module modules/mod_ssl.so" >> $HTTP_CONF
+echo "LoadModule socache_shmcb_module modules/mod_socache_shmcb.so" >> $HTTP_CONF
+echo "Listen 443" >> $HTTP_CONF
+echo "SSLSessionCache \"shmcb:/var/cache/mod_ssl/scache(512000)\"" >> $HTTP_CONF
+echo "SSLSessionCacheTimeout 300" >> $HTTP_CONF
+echo "<VirtualHost *:443>" >> $HTTP_CONF
+echo "    SSLEngine on" >> $HTTP_CONF
+echo "    SSLcertificateFile $CRT_FILE" >> $HTTP_CONF
+echo "    SSLCertificateKeyFile $KEY_FILE" >> $HTTP_CONF
+#echo "    ServerName $CNAME" >> $HTTP_CONF
+echo "    <Directory $WWW/emoncms>" >> $HTTP_CONF
+echo "        Options FollowSymLinks" >> $HTTP_CONF
+echo "        AllowOverride All" >> $HTTP_CONF
+echo "        DirectoryIndex index.php" >> $HTTP_CONF
+echo "        Require all granted" >> $HTTP_CONF
+echo "    </Directory>" >> $HTTP_CONF
+echo "</VirtualHost>" >> $HTTP_CONF
+
 # REGENERATING CONF FILES FROM ENV VARS
 echo "CREATING /etc/my.cnf"
 mv /etc/my.cnf /etc/my.old
