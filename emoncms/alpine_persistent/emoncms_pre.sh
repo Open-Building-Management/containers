@@ -104,7 +104,7 @@ echo "user = '$MQTT_USER'" >> settings.ini
 echo "password = '$MQTT_PASSWORD'" >> settings.ini
 echo "[feed]" >> settings.ini
 echo "engines_hidden = [0,6,10]" >> settings.ini
-echo "redisbuffer[enabled] = true" >> settings.ini
+echo "redisbuffer[enabled] = $REDIS_BUFFER" >> settings.ini
 echo "redisbuffer[sleep] = 300" >> settings.ini
 echo "phpfina[datadir] = '$EMONCMS_DATADIR/phpfina/'" >> settings.ini
 echo "phptimeseries[datadir] = '$EMONCMS_DATADIR/phptimeseries/'" >> settings.ini
@@ -114,7 +114,7 @@ echo "feedviewpath = 'graph/'" >> settings.ini
 echo "favicon = 'favicon_emonpi.png'" >> settings.ini
 echo "[log]" >> settings.ini
 echo "; Log Level: 1=INFO, 2=WARN, 3=ERROR" >> settings.ini
-echo "level = 2" >> settings.ini
+echo "level = $EMONCMS_LOG_LEVEL" >> settings.ini
 cp settings.ini $WWW/emoncms/settings.ini
 
 echo "CREATING USER/PWD FOR MOSQUITTO"

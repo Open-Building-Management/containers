@@ -199,8 +199,13 @@ RUN set -x;\
 	echo "php $WWW/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.php" >> $S6_DIR/emoncms_mqtt/run;\
 	echo "s6-setuidgid $DAEMON" >> $S6_DIR/service-runner/run;\
 	echo "python3 $WWW/emoncms/scripts/services/service-runner/service-runner.py" >> $S6_DIR/service-runner/run;\
-	echo "s6-setuidgid $DAEMON" >> $S6_DIR/feedwriter/run;\
-	echo "php $WWW/emoncms/scripts/feedwriter.php" >> $S6_DIR/feedwriter/run;\
+	echo "#!/command/with-contenv sh" > $S6_DIR/feedwriter/run;\
+	echo "if [ \"\${REDIS_BUFFER}\" -ne 1 ]; then" >> $S6_DIR/feedwriter/run;\
+	echo "    echo \"FEEDWRITER IS MUTED !\"" >> $S6_DIR/feedwriter/run;\
+	echo "    s6-svc -O ." >> $S6_DIR/feedwriter/run;\
+	echo "    exit 0" >> $S6_DIR/feedwriter/run;\
+	echo "fi" >> $S6_DIR/feedwriter/run;\
+	echo "exec s6-setuidgid $DAEMON php $WWW/emoncms/scripts/feedwriter.php" >> $S6_DIR/feedwriter/run;\
 	#chown $DAEMON $OEM_DIR;\
 	chown -R $DAEMON $WWW/emoncms;\
 	chown -R $DAEMON $EMONCMS_DIR;\
@@ -221,6 +226,8 @@ ENV \
 	TZ="Europe/Paris" \
 	EMONCMS_DATADIR=/data/emoncms \
 	TS="phpfina phpfiwa phptimeseries" \
+	REDIS_BUFFER=1 \
+	EMONCMS_LOG_LEVEL=2 \
 	MYSQL_DATABASE=emoncms \
 	MYSQL_USER=emoncms \
 	MYSQL_PASSWORD=emonpiemoncmsmysql2016 \
