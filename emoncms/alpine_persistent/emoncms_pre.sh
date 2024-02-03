@@ -100,6 +100,10 @@ echo "prefix = ''" >> settings.ini
 echo "[mqtt]" >> settings.ini
 echo "enabled = true" >> settings.ini
 echo "host = '$MQTT_HOST'" >> settings.ini
+if [ "$REVERSE_PROXY" -eq 1 ]; then
+    echo "using a custom basetopic emon_$HOSTNAME"
+    echo "basetopic = 'emon_$HOSTNAME'" >> settings.ini
+fi
 echo "user = '$MQTT_USER'" >> settings.ini
 echo "password = '$MQTT_PASSWORD'" >> settings.ini
 echo "[feed]" >> settings.ini
