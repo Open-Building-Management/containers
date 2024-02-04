@@ -30,7 +30,7 @@ ENV \
 	OEM_DIR=/opt/openenergymonitor \
 	EMONCMS_DIR=/opt/emoncms \
 	EMONCMS_LOG_LOCATION=/var/log/emoncms \
-	MQTT_CONF=/etc/mosquitto/mosquitto.conf	
+	MQTT_CONF=/etc/mosquitto/mosquitto.conf
 
 # /data creation
 RUN mkdir -p /data
