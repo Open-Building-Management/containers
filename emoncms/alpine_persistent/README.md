@@ -76,19 +76,25 @@ You can activate ssl on the emoncms standalone docker image using the new ENV va
 ```
 sudo docker run --rm -p 8081:80 -p 8082:443 -p 7883:1883 -v /etc/ssl/certs/bios:/cert -e CRT_FILE=/cert/alexjunk.crt -e KEY_FILE=/cert/alexjunk.key -it emoncms:alpine3.18
 ```
-**If your router doesn't support NAT loopback and you want to access the service using the dns address, you need to add an entry to the hosts file of each machine you want to use for browsing. This requires the container to be started with ssl enabled !**
+**USECASE : you want to access the service using the dns address on a computer of your local network : if your router doesn't support NAT loopback, you need to add an entry to the hosts file of each machine you want to use for browsing :**
+```
+my.domain.name  192.168.1.33
+```
+**This requires the container to be started with ssl enabled !** The reverse proxy mentioned just after has nothing to do with it. 
+
+If you don't use a reverse proxy and which to access to your emoncms instance from the instance, you have to add a NAT/PAT rule on your internet router. This involves specifying an internal port and an external port for a local IP. All traffic on your `router's public address:external port` will be routed to the `local IP address:internal port`. 
 
 #### about secure connexions
 
-In all cases, [nginx proxy manager](https://nginxproxymanager.com/) will enable you to access your services securely from the outside, even if these services only offer a non-secure connection.
+In all cases, [NGINX PROXY MANAGER](https://nginxproxymanager.com/), which is a reverse proxy, will enable you to access your services securely from the outside, even if these services only offer a non-secure connection. For example, the emoncms standalone docker container without ssl activated does not offer a secure connexion.
 
-If you want to achive this, you need a dynamic domain name, for example supplied by noip or by duckdns. 
+If you want to access your services securely from the outside, you need a dynamic domain name, for example supplied by noip or by duckdns. 
 
 A valid domain name may be obtained via duckdns simply by logging in using a github account, which provides a token to be supplied when generating the associated certificates needed for securing the connection. 
 
 Certificates consist of a pair of public and private keys.
 
-To generate them using nginx proxy manager, click on `SSL Certificates > Add SSl Certificate > Let's Encrypt`
+To generate them using NGINX PROXY MANAGER, click on `SSL Certificates > Add SSl Certificate > Let's Encrypt`
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/a056e47b-6844-433c-b4af-ef92651e329b)
 
@@ -100,4 +106,4 @@ The second step is to create a proxy host, using the domain name with `Websockes
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/93c2b7b7-4121-4edc-837e-8403c50ae450)
 
-The final stage is to adjust a NAT/PAT rule on your internet router so that the traffic on port 443 goes to the nginx reverse proxy.
+**The final stage is to adjust a NAT/PAT rule on your internet router so that the traffic on port 443 goes to the NGINX PROXY MANAGER.**
