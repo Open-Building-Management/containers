@@ -95,7 +95,7 @@ You should access to the service through `https://my.domain.name`
 
 #### accessing from outside
 
-If you don't use a reverse proxy and which to access to your emoncms instance from the outside, you have to add a NAT/PAT rule on your internet router.
+If you don't use a reverse proxy and wish to access to your emoncms instance from the outside, you have to add a NAT/PAT rule on your internet router.
 
 This involves specifying an internal port and an external port for a local IP. All traffic on your `router's public address:external port` will be routed to the `local IP address:internal port`.
 
