@@ -78,8 +78,8 @@ sudo docker run --rm -p 8081:80 -p 8082:443 -p 7883:1883 -v /etc/ssl/certs/bios:
 ```
 If you want to access the service using the dns address on a computer of your local network and if your router doesn't support NAT loopback, you need to add an entry to the hosts file of each machine you want to use for browsing :**
 
-- `my.domain.name  127.0.0.1` if the machine is just the one running the service
-- `my.domain.name  192.168.1.33` if not
+- `my.domain.name  127.0.0.1` if the browsing machine is just the same as the one running the service
+- `my.domain.name  192.168.1.33` if browsing machine is not the machine running the service and if 192.168.1.33 is the local IP of the machine running the service
 
 This requires the container to be started with ssl enabled ! The reverse proxy mentioned just after has nothing to do with it.
 
