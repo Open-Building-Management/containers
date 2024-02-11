@@ -87,7 +87,7 @@ If you don't use a reverse proxy and which to access to your emoncms instance fr
 
 You can use your public IP if fixed or a dynamic dns, for example supplied by noip or by duckdns.
 
-#### about securing connexions
+#### about proxies and generating certificates with let's encrypt
 
 In all cases, [NGINX PROXY MANAGER](https://nginxproxymanager.com/), which is a reverse proxy, will enable you to access your services securely from the outside, even if these services only offer a non-secure connection. For example, the emoncms standalone docker container without ssl activated does not offer a secure connexion.
 
