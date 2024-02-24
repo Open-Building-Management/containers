@@ -71,6 +71,16 @@ echo "        DirectoryIndex index.php" >> $VIRTUAL_HOST
 echo "        Require all granted" >> $VIRTUAL_HOST
 echo "    </Directory>" >> $VIRTUAL_HOST
 echo "</VirtualHost>" >> $VIRTUAL_HOST
+SECURITY=/etc/apache2/conf.d/security.conf
+echo "<IfModule mod_headers.c>" > $SECURITY
+echo "#Header set Content-Security-Policy \"script-src * 'unsafe-inline' ; style-src * 'unsafe-inline'\"" >> $SECURITY
+echo "Header set X-Content-Type-Options \"nosniff\"" >> $SECURITY
+echo "Header always set Strict-Transport-Security \"max-age=16070400; includeSubDomains\"" >> $SECURITY
+echo "Header always set X-Frame-Options \"SAMEORIGIN\"" >> $SECURITY
+echo "Header always set Referrer-Policy \"same-origin\"" >> $SECURITY
+echo "Header set X-XSS-Protection \"1; mode=block\"" >> $SECURITY
+echo "Header set Permissions-Policy \"accelerometer=(), geolocation=(), fullscreen=(), microphone=(), camera=(), display-capture=()\"" >> $SECURITY
+echo "</IfModule>" >> $SECURITY
 
 echo "CREATING /etc/my.cnf"
 mv /etc/my.cnf /etc/my.old
@@ -104,6 +114,7 @@ echo "host = '$MQTT_HOST'" >> settings.ini
 if [ "$REVERSE_PROXY" -eq 1 ]; then
     echo "using a custom basetopic emon_$HOSTNAME"
     echo "basetopic = 'emon_$HOSTNAME'" >> settings.ini
+    echo "client_id = 'emoncms_$HOSTNAME'" >> settings.ini
 fi
 echo "user = '$MQTT_USER'" >> settings.ini
 echo "password = '$MQTT_PASSWORD'" >> settings.ini
