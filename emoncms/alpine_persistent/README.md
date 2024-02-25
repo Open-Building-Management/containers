@@ -79,7 +79,7 @@ sudo docker run --rm -p 8081:80 -p 8082:443 -p 7883:1883 -v /etc/ssl/certs/bios:
 If you want to access the service using the dns address on a computer of your local network and if your router doesn't support NAT loopback, you need to add an entry to the hosts file of each machine you want to use for browsing :
 
 - `127.0.0.1  my.domain.name` if the browsing machine is just the same as the one running the service
-- `192.168.1.33  my.domain.name` if the browsing machine is not the machine running the service, which local IP is supposed to be `192.168.1.33`
+- `192.168.1.33  my.domain.name` if the machine running the service local IP is `192.168.1.33`, the browsing machine being a distinct one
 
 This requires the container to be started with ssl enabled ! The reverse proxy mentioned just after has nothing to do with it.
 
@@ -120,3 +120,16 @@ The second step is to create a proxy host, using the domain name with `Websockes
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/93c2b7b7-4121-4edc-837e-8403c50ae450)
 
 **The final stage is to adjust a NAT/PAT rule on your internet router so that the traffic on port 443 goes to the NGINX PROXY MANAGER.**
+
+### 25/02/2024
+
+adding some security headers on apache
+
+- X-Content-Type-Options
+- Strict-Transport-Security
+- X-Frame-Options, to defend against clickjacking
+- Referrer-Policy
+- X-XSS-Protection
+- Permissions-Policy
+
+could not managed to add Content-Security-Policy, as emoncms has got too much inline javascript !
