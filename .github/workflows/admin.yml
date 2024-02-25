@@ -6,6 +6,9 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        alpine_version: [3.16, 3.18]
     steps:
       -
         name: Checkout
@@ -22,11 +25,20 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        id: get_date
+        name: get current date
+        run: |
+          today=$(date +'%Y-%m-%d')
+          echo $today
+          echo "today=$today" >> "$GITHUB_OUTPUT"
       -
         name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: admin/.
           platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            "BUILD_FROM=alpine:${{ matrix.alpine_version }}"
           push: true
-          tags: alexjunk/admin:alpine3.16
+          tags: alexjunk/admin:${{ matrix.alpine_version }}_${{ steps.get_date.outputs.today }}
