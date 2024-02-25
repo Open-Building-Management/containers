@@ -72,16 +72,16 @@ echo "        Require all granted" >> $VIRTUAL_HOST
 echo "    </Directory>" >> $VIRTUAL_HOST
 echo "</VirtualHost>" >> $VIRTUAL_HOST
 if [ "$ENFORCE_SECURITY" -eq 1 ]; then
-	SECURITY=/etc/apache2/conf.d/security.conf
-	echo "<IfModule mod_headers.c>" > $SECURITY
-	echo "#Header set Content-Security-Policy \"script-src * 'unsafe-inline' ; style-src * 'unsafe-inline'\"" >> $SECURITY
-	echo "Header set X-Content-Type-Options \"nosniff\"" >> $SECURITY
-	echo "Header always set Strict-Transport-Security \"max-age=16070400; includeSubDomains\"" >> $SECURITY
-	echo "Header always set X-Frame-Options \"SAMEORIGIN\"" >> $SECURITY
-	echo "Header always set Referrer-Policy \"same-origin\"" >> $SECURITY
-	echo "Header set X-XSS-Protection \"1; mode=block\"" >> $SECURITY
-	echo "Header set Permissions-Policy \"accelerometer=(), geolocation=(), fullscreen=(), microphone=(), camera=(), display-capture=()\"" >> $SECURITY
-	echo "</IfModule>" >> $SECURITY
+    SECURITY=/etc/apache2/conf.d/security.conf
+    echo "<IfModule mod_headers.c>" > $SECURITY
+    echo "#Header set Content-Security-Policy \"script-src * 'unsafe-inline' ; style-src * 'unsafe-inline'\"" >> $SECURITY
+    echo "Header set X-Content-Type-Options \"nosniff\"" >> $SECURITY
+    echo "Header always set Strict-Transport-Security \"max-age=16070400; includeSubDomains\"" >> $SECURITY
+    echo "Header always set X-Frame-Options \"SAMEORIGIN\"" >> $SECURITY
+    echo "Header always set Referrer-Policy \"same-origin\"" >> $SECURITY
+    echo "Header set X-XSS-Protection \"1; mode=block\"" >> $SECURITY
+    echo "Header set Permissions-Policy \"accelerometer=(), geolocation=(), fullscreen=(), microphone=(), camera=(), display-capture=()\"" >> $SECURITY
+    echo "</IfModule>" >> $SECURITY
 fi
 
 echo "CREATING /etc/my.cnf"
