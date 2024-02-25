@@ -114,10 +114,12 @@ echo "[mqtt]" >> settings.ini
 echo "enabled = true" >> settings.ini
 echo "host = '$MQTT_HOST'" >> settings.ini
 if [ "$USE_HOSTNAME_FOR_MQTT_TOPIC_CLIENTID" -eq 1 ]; then
-    echo "using a custom MQTT basetopic $MQTT_BASETOPIC\_$HOSTNAME"
-    echo "basetopic = '$MQTT_BASETOPIC\_$HOSTNAME'" >> settings.ini
-    echo "using a custom MQTT client_id $MQTT_CLIENT_ID\_$HOSTNAME"
-    echo "client_id = '$MQTT_CLIENT_ID\_$HOSTNAME'" >> settings.ini
+    BASETOPIC=$MQTT_BASETOPIC\_$HOSTNAME
+    CLIENT_ID=$MQTT_CLIENT_ID\_$HOSTNAME
+    echo "using a custom MQTT basetopic $BASETOPIC"
+    echo "basetopic = '$BASETOPIC'" >> settings.ini
+    echo "using a custom MQTT client_id $CLIENT_ID"
+    echo "client_id = '$CLIENT_ID'" >> settings.ini
 else
     echo "basetopic = '$MQTT_BASETOPIC'" >> settings.ini
     echo "client_id = '$MQTT_CLIENT_ID'" >> settings.ini
