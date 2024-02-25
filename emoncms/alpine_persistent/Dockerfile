@@ -238,6 +238,7 @@ ENV \
 	HTTP_CONF=/etc/apache2/httpd.conf \
 	CRT_FILE=/etc/ssl/apache2/server.pem \
 	KEY_FILE=/etc/ssl/apache2/server.key \
+	ENFORCE_SECURITY=1 \
 	CNAME=localhost \
 	REVERSE_PROXY=0
 
