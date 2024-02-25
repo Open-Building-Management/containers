@@ -121,9 +121,7 @@ The second step is to create a proxy host, using the domain name with `Websockes
 
 **The final stage is to adjust a NAT/PAT rule on your internet router so that the traffic on port 443 goes to the NGINX PROXY MANAGER.**
 
-### 25/02/2024
-
-adding some security headers on apache
+### 25/02/2024 - adding some security headers on apache
 
 - X-Content-Type-Options
 - Strict-Transport-Security
