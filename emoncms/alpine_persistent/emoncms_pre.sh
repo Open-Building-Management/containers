@@ -113,10 +113,14 @@ echo "prefix = ''" >> settings.ini
 echo "[mqtt]" >> settings.ini
 echo "enabled = true" >> settings.ini
 echo "host = '$MQTT_HOST'" >> settings.ini
-if [ "$REVERSE_PROXY" -eq 1 ]; then
-    echo "using a custom basetopic emon_$HOSTNAME"
-    echo "basetopic = 'emon_$HOSTNAME'" >> settings.ini
-    echo "client_id = 'emoncms_$HOSTNAME'" >> settings.ini
+if [ "$USE_HOSTNAME_FOR_MQTT_TOPIC_CLIENTID" -eq 1 ]; then
+    echo "using a custom MQTT basetopic $MQTT_BASETOPIC\_$HOSTNAME"
+    echo "basetopic = '$MQTT_BASETOPIC\_$HOSTNAME'" >> settings.ini
+    echo "using a custom MQTT client_id $MQTT_CLIENT_ID\_$HOSTNAME"
+    echo "client_id = '$MQTT_CLIENT_ID\_$HOSTNAME'" >> settings.ini
+else
+    echo "basetopic = '$MQTT_BASETOPIC'" >> settings.ini
+    echo "client_id = '$MQTT_CLIENT_ID'" >> settings.ini
 fi
 echo "user = '$MQTT_USER'" >> settings.ini
 echo "password = '$MQTT_PASSWORD'" >> settings.ini
@@ -136,8 +140,8 @@ echo "level = $EMONCMS_LOG_LEVEL" >> settings.ini
 cp settings.ini $WWW/emoncms/settings.ini
 
 echo "CREATING USER/PWD FOR MOSQUITTO"
-touch /etc/mosquitto/passwd;\
-mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD;\
+touch /etc/mosquitto/passwd
+mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD
 
 echo "GENERATING config.cfg for BACKUP MODULE"
 echo "user=$DAEMON" > config.cfg
