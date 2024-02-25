@@ -1,4 +1,4 @@
-name: multi arch build of tflite with pip
+name: multi arch build of tflite with pip with versions in tag
 
 on:
   workflow_dispatch:
