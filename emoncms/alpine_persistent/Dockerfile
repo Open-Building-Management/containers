@@ -118,19 +118,19 @@ RUN set -x;\
 # we need phpize so we install php-dev
 RUN set -x;\
 	apk add --no-cache build-base mosquitto-dev;\
-	apk add --no-cache py3-pip php$PHP_VER-dev;\
+	apk add --no-cache php$PHP_VER-dev;\
 	sed -i "s/^save 900 1/#save 900 1/" $REDIS_CONF;\
 	sed -i "s/^save 300 1/#save 300 1/" $REDIS_CONF;\
 	sed -i "s/^save 60 1/#save 60 1/" $REDIS_CONF;\
 	git clone https://github.com/phpredis/phpredis;\
 	cd phpredis && phpize && ./configure && make && make install;\
 	printf "extension=redis.so" | tee $PHP_CONF/redis.ini 1>&2;\
-	pip3 install redis;\
+	apk add --no-cache py3-redis;\
 	git clone $MOSQUITTO_PHP;\
 	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
 	printf "extension=mosquitto.so" | tee $PHP_CONF/mosquitto.ini 1>&2;\
 	apk del --no-cache build-base mosquitto-dev;\
-	apk del --no-cache py3-pip php$PHP_VER-dev;\
+	apk del --no-cache php$PHP_VER-dev;\
 	# this will remove sources for phpredis and Mosquitto-PHP
 	rm -Rf $OEM_DIR/phpredis
 
