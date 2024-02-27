@@ -14,6 +14,7 @@ ARG \
 	# we dont modify php.ini, we create new extensions in conf.d
 	PHP_CONF=/etc/php8/conf.d \
 	REDIS_CONF=/etc/redis.conf \
+	USE_REDISPY_APK=1 \
 	# source for Mosquitto-PHP extension
 	# original repo is https://github.com/mgdm/Mosquitto-PHP
 	# but it does not work for php8
@@ -118,19 +119,20 @@ RUN set -x;\
 # we need phpize so we install php-dev
 RUN set -x;\
 	apk add --no-cache build-base mosquitto-dev;\
-	apk add --no-cache php$PHP_VER-dev;\
+	apk add --no-cache py3-pip php$PHP_VER-dev;\
 	sed -i "s/^save 900 1/#save 900 1/" $REDIS_CONF;\
 	sed -i "s/^save 300 1/#save 300 1/" $REDIS_CONF;\
 	sed -i "s/^save 60 1/#save 60 1/" $REDIS_CONF;\
 	git clone https://github.com/phpredis/phpredis;\
 	cd phpredis && phpize && ./configure && make && make install;\
 	printf "extension=redis.so" | tee $PHP_CONF/redis.ini 1>&2;\
-	apk add --no-cache py3-redis;\
+	if [ "$USE_REDISPY_APK" -ne 0 ]; then apk add --no-cache py3-redis; fi;\
+	if [ "$USE_REDISPY_APK" -eq 0 ]; then pip3 install redis; fi;\
 	git clone $MOSQUITTO_PHP;\
 	cd Mosquitto-PHP && phpize && ./configure && make && make install;\
 	printf "extension=mosquitto.so" | tee $PHP_CONF/mosquitto.ini 1>&2;\
 	apk del --no-cache build-base mosquitto-dev;\
-	apk del --no-cache php$PHP_VER-dev;\
+	apk del --no-cache py3-pip php$PHP_VER-dev;\
 	# this will remove sources for phpredis and Mosquitto-PHP
 	rm -Rf $OEM_DIR/phpredis
 
@@ -146,7 +148,7 @@ RUN set -x;\
 	echo "require 'process_settings.php';" >> emoncmsdbupdate.php;\
 	echo "require 'core.php';" >> emoncmsdbupdate.php;\
 	echo "\$mysqli = @new mysqli(" >> emoncmsdbupdate.php;\
-	echo "    \$ssettings['sql']['server']," >> emoncmsdbupdate.php;\
+	echo "    \$settings['sql']['server']," >> emoncmsdbupdate.php;\
 	echo "    \$settings['sql']['username']," >> emoncmsdbupdate.php;\
 	echo "    \$settings['sql']['password']," >> emoncmsdbupdate.php;\
 	echo "    \$settings['sql']['database']," >> emoncmsdbupdate.php;\
