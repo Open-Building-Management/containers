@@ -1,0 +1,50 @@
+name: build of tensorflow full for arm64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - ubuntu: 22.04
+          tensorflow: 2.10.0
+          tf_wheel_repo: https://github.com/PINTO0309/Tensorflow-bin/releases/download/v2.10.0
+          tf_wheel_name: tensorflow-2.10.0-cp310-none-linux_aarch64.whl
+          python: 3.10
+          paho: 1.6.1
+          pymodbus: 3.4.1
+          mysql_connector: 8.0.29
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: tensorflow/.
+          platforms: linux/arm64
+          build-args: |
+            "BUILD_FROM=ubuntu:${{ matrix.ubuntu }}"
+            "PYMODBUS_VERSION=${{ matrix.pymodbus}}"
+            "PAHO_VERSION=${{ matrix.paho }}"
+            "MYSQL_CONNECTOR_VERSION=${{ matrix.mysql_connector }}"
+            "TF_WHEEL_REPO=${{ matrix.tf_wheel_repo }}"
+            "TF_WHEEL_NAME=${{ matrix.tf_wheel_name }}"
+          push: true
+          tags: alexjunk/tensorflow_${{ matrix.tensorflow }}_python_${{ matrix.python }}paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}_mysql_connector_${{ matrix.mysql_connector }}
