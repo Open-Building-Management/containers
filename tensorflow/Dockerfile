@@ -21,5 +21,5 @@ RUN apt-get -y update;\
     python3 -m pip install --no-cache-dir mysql-connector-python==$MYSQL_CONNECTOR_VERSION;\
     python3 -m pip install --no-cache-dir click requests;\
     wget $TF_WHEEL_REPO/$TF_WHEEL_NAME;\
-    python3 -m pip install --upgrade --no-cache-dir --upgrade $TF_WHEEL_NAME
+    python3 -m pip install --upgrade --no-cache-dir --upgrade $TF_WHEEL_NAME;\
     rm *.whl
