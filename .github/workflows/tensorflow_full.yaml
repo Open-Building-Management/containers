@@ -10,10 +10,9 @@ jobs:
       matrix:
         include:
         - ubuntu: 22.04
-          tensorflow: 2.10.0
+          tensorflow: 2.10.0-cp310
           tf_wheel_repo: https://github.com/PINTO0309/Tensorflow-bin/releases/download/v2.10.0
           tf_wheel_name: tensorflow-2.10.0-cp310-none-linux_aarch64.whl
-          python: 3.10
           paho: 1.6.1
           pymodbus: 3.4.1
           mysql_connector: 8.0.29
@@ -47,4 +46,4 @@ jobs:
             "TF_WHEEL_REPO=${{ matrix.tf_wheel_repo }}"
             "TF_WHEEL_NAME=${{ matrix.tf_wheel_name }}"
           push: true
-          tags: alexjunk/tensorflow_${{ matrix.tensorflow }}_python_${{ matrix.python }}paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}_mysql_connector_${{ matrix.mysql_connector }}
+          tags: alexjunk/tensorflow_${{ matrix.tensorflow }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}_mysql_connector_${{ matrix.mysql_connector }}
