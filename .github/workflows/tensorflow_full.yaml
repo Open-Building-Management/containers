@@ -46,4 +46,4 @@ jobs:
             "TF_WHEEL_REPO=${{ matrix.tf_wheel_repo }}"
             "TF_WHEEL_NAME=${{ matrix.tf_wheel_name }}"
           push: true
-          tags: alexjunk/tensorflow_${{ matrix.tensorflow }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}_mysql_connector_${{ matrix.mysql_connector }}
+          tags: alexjunk/tensorflow:${{ matrix.tensorflow }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}_mysql_connector_${{ matrix.mysql_connector }}
