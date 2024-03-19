@@ -44,28 +44,26 @@ MQTT_LOG_LEVEL|||1||
 
 ## changelog
 
-### 29/09/2023
+### 03/2024
 
-adding ARG BUILD_FROM
+python has introduced the concept of EXTERNALLY-MANAGED packages
 
-defining PHP_VER and PHP_CONF as ARG and no more as ENV, so we can modulate PHP_VER and PHP_CONF during build, in order to be able to build for alpine:3.18 without changing anything
+python3.11 on alpine3.19 is following [Pep 668](https://peps.python.org/pep-0668/)
 
-```
-docker build -t emoncms:alpine3.18 --build-arg="BUILD_FROM=alpine:3.18" --build-arg="TARGETPLATFORM=linux/amd64" --build-arg="PHP_VER=81" --build-arg="PHP_CONF=/etc/php81/conf.d" .
-```
+https://stackoverflow.com/questions/75608323/how-do-i-solve-error-externally-managed-environment-every-time-i-use-pip-3
 
-nota : PHP_CONF is also defined as an ENV at the end of the dockerfile as we use it in emoncms_pre
+for redis, using now apk package py3-redis instead of pip package
 
-### 21/09/2023
+### 25/02/2024 - adding some security headers on apache
 
-solving timezone problem with the command `cp /usr/share/zoneinfo/$TZ /etc/localtime` in emoncms_pre
+- X-Content-Type-Options
+- Strict-Transport-Security
+- X-Frame-Options, to defend against clickjacking
+- Referrer-Policy
+- X-XSS-Protection
+- Permissions-Policy
 
-possibility to modulate mqtt log level :
-
-```
-docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL="error warning information notice" themis:alpine3.16
-docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL=notice themis:alpine3.16
-```
+could not managed to add Content-Security-Policy, as emoncms has got too much inline javascript !
 
 ### 31/01/2024
 
@@ -123,13 +121,25 @@ The second step is to create a proxy host, using the domain name with `Websockes
 
 **The final stage is to adjust a NAT/PAT rule on your internet router so that the traffic on port 443 goes to the NGINX PROXY MANAGER.**
 
-### 25/02/2024 - adding some security headers on apache
+### 29/09/2023
 
-- X-Content-Type-Options
-- Strict-Transport-Security
-- X-Frame-Options, to defend against clickjacking
-- Referrer-Policy
-- X-XSS-Protection
-- Permissions-Policy
+adding ARG BUILD_FROM
 
-could not managed to add Content-Security-Policy, as emoncms has got too much inline javascript !
+defining PHP_VER and PHP_CONF as ARG and no more as ENV, so we can modulate PHP_VER and PHP_CONF during build, in order to be able to build for alpine:3.18 without changing anything
+
+```
+docker build -t emoncms:alpine3.18 --build-arg="BUILD_FROM=alpine:3.18" --build-arg="TARGETPLATFORM=linux/amd64" --build-arg="PHP_VER=81" --build-arg="PHP_CONF=/etc/php81/conf.d" .
+```
+
+nota : PHP_CONF is also defined as an ENV at the end of the dockerfile as we use it in emoncms_pre
+
+### 21/09/2023
+
+solving timezone problem with the command `cp /usr/share/zoneinfo/$TZ /etc/localtime` in emoncms_pre
+
+possibility to modulate mqtt log level :
+
+```
+docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL="error warning information notice" themis:alpine3.16
+docker run --rm -it -p 8081:80 -p 7883:1883 -e MQTT_LOG_LEVEL=notice themis:alpine3.16
+```
