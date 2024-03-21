@@ -16,6 +16,19 @@ Even if mariadb tables initialisation is done when the first user is created, as
 
 ## Some ENV vars are both used during buildtime and during runtime
 
+ARGS (ONLY) ARE : 
+
+- TARGETPLATFORM
+- S6_OVERLAY_VERSION=3.1.6.2
+- S6_SRC=https://github.com/just-containers/s6-overlay/releases/download
+- S6_DIR=/etc/s6-overlay/s6-rc.d
+- PRIMOS="apache2 redis mosquitto mariadb"
+- SECONDOS="emoncms_mqtt service-runner feedwriter"
+- REDIS_CONF=/etc/redis.conf
+- USE_REDISPY_APK=1
+- MOSQUITTO_PHP=https://github.com/openenergymonitor/Mosquitto-PHP
+- EMONCMS_SRC=https://github.com/emoncms/emoncms
+
 ENV|Dockerfile|makefile (used during build)|emoncms_pre|mysql_ready|ARG
 --|--|--|--|--|--
 DAEMON|10||2||
@@ -44,7 +57,6 @@ REDIS_BUFFER|||1||
 EMONCMS_LOG_LEVEL|||1||
 MQTT_BASETOPIC|||2||
 MQTT_CLIENT_ID|||2||
-MQTT_LOG_LEVEL|||1||
 HTTP_CONF|||5||
 CRT_FILE|||1||
 KEY_FILE|||1||
