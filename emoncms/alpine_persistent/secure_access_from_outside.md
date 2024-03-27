@@ -20,10 +20,16 @@ To generate them using NGINX PROXY MANAGER, click on `SSL Certificates > Add SSl
 
 Fill the domain name then choose the `DNS Challenge` method, fill the credentials with your duckdns token, agree to the terms of service and save !
 
-You can use wildcard (*.my.domain.name) but they are less and less recommanded : https://en.wikipedia.org/wiki/Wildcard_certificate
-
 The second step is to create a proxy host, using the domain name with `Websockest Support`, associating the certificate and choosing the `force SSL` option
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/93c2b7b7-4121-4edc-837e-8403c50ae450)
 
 **The final stage is to adjust a NAT/PAT rule on your internet router so that the traffic on port 443 goes to the NGINX PROXY MANAGER.**
+
+## about wildcard certificates
+
+You can use wildcard (*.my.domain.name) but they are less and less recommanded : https://en.wikipedia.org/wiki/Wildcard_certificate
+
+with a wildcard | without
+--|--
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/c5a459b8-647f-4e10-a4ec-79fc175dbebf) | ![image](https://github.com/Open-Building-Management/containers/assets/24553739/87a7f362-fd0f-49f9-8b4c-f70aa9569497)
