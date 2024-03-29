@@ -1,18 +1,18 @@
 # secure access from outside
 
-If you don't use a reverse proxy and wish to access to your application from the outside, you have to add a NAT/PAT rule on your internet router.
+In order to access to your application from the outside, you have to add a NAT/PAT rule on your internet router.
 
-This involves specifying an internal port and an external port for a local IP. All traffic on your `router's public address:external port` will be routed to the `local IP address:internal port`.
-
-You can use your public IP if fixed or a dynamic dns, for example supplied by noip or by duckdns.
+This involves specifying an internal port and an external port for a local IP. All traffic on your `router's public address:external port` will be routed to the `local IP address:internal port`. 
 
 ## about proxies and generating certificates with let's encrypt
 
-In all cases, [NGINX PROXY MANAGER](https://nginxproxymanager.com/), which is a reverse proxy, will enable you to access your services securely from the outside, even if these services only offer a non-secure connection. For example, the emoncms standalone docker container without ssl activated does not offer a secure connexion.
+[NGINX PROXY MANAGER](https://nginxproxymanager.com/) is a reverse proxy, will enable you to access your services securely from the outside, even if these services only offer a non-secure connection. For example, the emoncms standalone docker container without ssl activated does not offer a secure connexion. you can achieve something similar directling using nginx, but nginx proxy manager offers an interface so you dont have to bother with conf files...
 
-If you want to access your services securely from the outside, you need a valid domain name, which may be obtained via duckdns simply by logging in using a github account. This will provide you a token to be supplied when generating the associated certificates needed for securing the connection. 
+If you want to access your services securely from the outside, you need a valid domain name, which may be obtained via duckdns simply by logging in using a github account. This will provide you a token to be supplied when generating the associated certificates needed for securing the connection.
 
-Certificates consist of a pair of public and private keys.
+If your IP is fixed, the association with the domain name has to be done only once. If your IP is dynamic, for example if you use an m2m 4G simcard, you will have to manage the updates. Some services do this for free (duckdns) while others like noip require a payment....
+
+The ssl certificates consist of a pair of public and private keys.
 
 To generate them using NGINX PROXY MANAGER, click on `SSL Certificates > Add SSl Certificate > Let's Encrypt`
 
