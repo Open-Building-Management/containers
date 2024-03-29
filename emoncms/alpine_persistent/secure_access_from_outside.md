@@ -26,7 +26,7 @@ To generate the certificates using NGINX PROXY MANAGER, click on `SSL Certificat
 
 Fill the domain name then choose the `DNS Challenge` method, fill the credentials with your duckdns token, agree to the terms of service and save !
 
-The second step is to create a proxy host, using the domain name with `Websockest Support`, associating the certificate and choosing the `force SSL` option
+The second step is to create a proxy host, using the domain name with `Websocket Support`, associating the certificate and choosing the `force SSL` option
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/93c2b7b7-4121-4edc-837e-8403c50ae450)
 
