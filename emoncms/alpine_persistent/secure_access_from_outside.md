@@ -4,9 +4,11 @@ In order to access to your application from the outside, you have to add a NAT/P
 
 This involves specifying an internal port and an external port for a local IP. All traffic on your `router's public address:external port` will be routed to the `local IP address:internal port`. 
 
-## about proxies and generating certificates with let's encrypt
+## about proxies and generating certificates
 
-[NGINX PROXY MANAGER](https://nginxproxymanager.com/) is a reverse proxy, will enable you to access your services securely from the outside, even if these services only offer a non-secure connection. For example, the emoncms standalone docker container without ssl activated does not offer a secure connexion. you can achieve something similar directling using nginx, but nginx proxy manager offers an interface so you dont have to bother with conf files...
+[NGINX PROXY MANAGER](https://nginxproxymanager.com/) is a reverse proxy, enabling you to access your services securely from the outside, even if these services only offer a non-secure connection. For example, the emoncms standalone docker container without ssl activated does not offer a secure connexion.
+
+You can achieve something similar directling using [nginx](https://hub.docker.com/_/nginx), but nginx proxy manager offers an interface so you dont have to bother with conf files...
 
 If you want to access your services securely from the outside, you need a valid domain name, which may be obtained via duckdns simply by logging in using a github account. This will provide you a token to be supplied when generating the associated certificates needed for securing the connection.
 
@@ -14,7 +16,11 @@ If your IP is fixed, the association with the domain name has to be done only on
 
 The ssl certificates consist of a pair of public and private keys.
 
-To generate them using NGINX PROXY MANAGER, click on `SSL Certificates > Add SSl Certificate > Let's Encrypt`
+Nginx proxy manager runs the whole process for you, ie acts as a proxy and creates/updates the certificates automatically. If you dont use it, [acme.sh](https://github.com/acmesh-official/acme.sh/) is an alternative and probably the simpliest option to manage your certificates using the free solution let's encrypt and many others....
+
+## using nginx proxy manager
+
+To generate the certificates using NGINX PROXY MANAGER, click on `SSL Certificates > Add SSl Certificate > Let's Encrypt`
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/a056e47b-6844-433c-b4af-ef92651e329b)
 
