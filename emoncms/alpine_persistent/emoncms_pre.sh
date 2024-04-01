@@ -163,8 +163,8 @@ echo "backup_source_path=$EMONCMS_DATADIR/backup/uploads" >> config.cfg
 cp config.cfg $EMONCMS_DIR/modules/backup/config.cfg
 
 echo "GENERATING backup.ini PHP extension"
-echo "post_max_size=3000000" > $PHP_CONF/backup.ini
-echo "upload_max_filesize=3000000" >> $PHP_CONF/backup.ini
+echo "post_max_size=1G" > $PHP_CONF/backup.ini
+echo "upload_max_filesize=1G" >> $PHP_CONF/backup.ini
 echo "upload_tmp_dir=$EMONCMS_DATADIR/backup/uploads" >> $PHP_CONF/backup.ini
 
 printf "$NEW_INSTALL" > /var/run/s6/container_environment/NEW_INSTALL
