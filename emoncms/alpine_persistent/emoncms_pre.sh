@@ -44,6 +44,12 @@ sed -i '/LoadModule rewrite_module/s/^#//g' $HTTP_CONF
 #sed -i '/<Directory "\/var\/www\/localhost\/htdocs\">/,/<\/Directory>/d' $HTTP_CONF
 # replace all occurences of localhost/htdocs by emoncms
 sed -i 's/localhost\/htdocs/emoncms/g' $HTTP_CONF
+# cf https://en.wikipedia.org/wiki/Standard_streams
+# redirecting apache logs to docker
+echo "APACHE ACCESS LOG TO STANDARD OUTPUT"
+sed -ri -e 's!^(\s*CustomLog)\s+\S+!\1 /proc/self/fd/1!g' $HTTP_CONF
+echo "APACHE ERROR LOG TO STANDARD ERROR"
+sed -ri -e 's!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g' $HTTP_CONF
 VIRTUAL_HOST=/etc/apache2/conf.d/emoncms.conf
 echo "<VirtualHost *:80>" > $VIRTUAL_HOST
 #echo "    ServerName $CNAME" >> $VIRTUAL_HOST
@@ -157,8 +163,8 @@ echo "backup_source_path=$EMONCMS_DATADIR/backup/uploads" >> config.cfg
 cp config.cfg $EMONCMS_DIR/modules/backup/config.cfg
 
 echo "GENERATING backup.ini PHP extension"
-echo "post_max_size=3G" > $PHP_CONF/backup.ini
-echo "upload_max_filesize=3G" >> $PHP_CONF/backup.ini
+echo "post_max_size=3000000" > $PHP_CONF/backup.ini
+echo "upload_max_filesize=3000000" >> $PHP_CONF/backup.ini
 echo "upload_tmp_dir=$EMONCMS_DATADIR/backup/uploads" >> $PHP_CONF/backup.ini
 
 printf "$NEW_INSTALL" > /var/run/s6/container_environment/NEW_INSTALL
