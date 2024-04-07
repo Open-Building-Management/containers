@@ -11,7 +11,7 @@ async def job():
     try:
         oss_datas = await loop.run_in_executor(None, urlopen, URL)
     except Exception:
-        message = f'request failure : {url}'
+        message = f'request failure : {URL}'
         print(message)
     else:
         print("async mode is successfull")
