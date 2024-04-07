@@ -1,4 +1,4 @@
-name: multi arch build of tflite with pip
+name: multi arch amd/arm 64 build of tflite with pip
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: tf/.
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           build-args: BUILD_FROM=ubuntu:${{ matrix.ubuntu_version }}
           push: true
           tags: alexjunk/tf:ubuntu${{ matrix.ubuntu_version }}
