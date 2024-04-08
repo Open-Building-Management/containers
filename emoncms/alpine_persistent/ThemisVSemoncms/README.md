@@ -1,3 +1,14 @@
+# differences 08/04/2024
+
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/cec205fc-1457-4feb-b587-becad95dc52c)
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/43e8beec-d304-444f-b575-149acf96af71)
+
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/254453bc-6550-48dd-b12a-531c6793022a)
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/cdba86ae-4523-483a-8a9e-0a076402bea8)
+
+
+
+
 # differences 07/04/2024
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/e5253034-50a5-4895-8d98-06f684dda970)
