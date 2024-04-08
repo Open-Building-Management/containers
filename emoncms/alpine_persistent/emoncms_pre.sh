@@ -4,6 +4,8 @@ cp /usr/share/zoneinfo/$TZ /etc/localtime
 
 NEW_INSTALL=0
 
+cd $OEM_DIR
+
 if ! [ -d "$EMONCMS_DATADIR" ]; then
     echo "Creating timeseries folders"
     mkdir -p "$EMONCMS_DATADIR"
@@ -15,6 +17,11 @@ else
     echo "Using existing timeseries"
 fi
 
+if ! [ -f "/config/security.conf" ]; then
+    echo "initializing a security.conf file in /config"
+    cp security.conf /config/security.conf
+fi
+
 if ! [ -d "$EMONCMS_DATADIR/mysql" ]; then 
     echo "Creating a new mariadb"
     mysql_install_db --user=mysql --datadir=$EMONCMS_DATADIR/mysql > /dev/null
@@ -23,8 +30,6 @@ if ! [ -d "$EMONCMS_DATADIR/mysql" ]; then
 else
     echo "Using existing mariadb"
 fi
-
-cd $OEM_DIR
 
 if [ "$REVERSE_PROXY" -eq 1 ]; then
     echo "using the container in an app server with a reverse proxy"
@@ -50,6 +55,9 @@ echo "APACHE ACCESS LOG TO STANDARD OUTPUT"
 sed -ri -e 's!^(\s*CustomLog)\s+\S+!\1 /proc/self/fd/1!g' $HTTP_CONF
 echo "APACHE ERROR LOG TO STANDARD ERROR"
 sed -ri -e 's!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g' $HTTP_CONF
+if [ "$CUSTOM_APACHE_CONF" -eq 1 ]; then
+	echo "IncludeOptional /config/*.conf" >> $HTTP_CONF
+fi
 VIRTUAL_HOST=/etc/apache2/conf.d/emoncms.conf
 echo "<VirtualHost *:80>" > $VIRTUAL_HOST
 #echo "    ServerName $CNAME" >> $VIRTUAL_HOST
@@ -77,18 +85,6 @@ echo "        DirectoryIndex index.php" >> $VIRTUAL_HOST
 echo "        Require all granted" >> $VIRTUAL_HOST
 echo "    </Directory>" >> $VIRTUAL_HOST
 echo "</VirtualHost>" >> $VIRTUAL_HOST
-if [ "$ENFORCE_SECURITY" -eq 1 ]; then
-    SECURITY=/etc/apache2/conf.d/security.conf
-    echo "<IfModule mod_headers.c>" > $SECURITY
-    echo "#Header set Content-Security-Policy \"script-src * 'unsafe-inline' ; style-src * 'unsafe-inline'\"" >> $SECURITY
-    echo "Header set X-Content-Type-Options \"nosniff\"" >> $SECURITY
-    echo "Header always set Strict-Transport-Security \"max-age=16070400; includeSubDomains\"" >> $SECURITY
-    echo "Header always set X-Frame-Options \"SAMEORIGIN\"" >> $SECURITY
-    echo "Header always set Referrer-Policy \"same-origin\"" >> $SECURITY
-    echo "Header set X-XSS-Protection \"1; mode=block\"" >> $SECURITY
-    echo "Header set Permissions-Policy \"accelerometer=(), geolocation=(), fullscreen=(), microphone=(), camera=(), display-capture=()\"" >> $SECURITY
-    echo "</IfModule>" >> $SECURITY
-fi
 
 echo "CREATING /etc/my.cnf"
 mv /etc/my.cnf /etc/my.old
