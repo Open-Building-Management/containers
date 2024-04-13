@@ -21,4 +21,4 @@ RUN apt-get -y update;\
     apt-get purge -y --auto-remove python3-pip;\
     apt-get clean
 
-COPY test.py .
+COPY test.py openurl.py ./
