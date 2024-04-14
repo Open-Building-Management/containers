@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        emoncms_src: [alexandrecuer/emoncms]
+        branch: [stable]
         include:
         - alpine_version: 3.16
           php_version: 8
@@ -38,7 +40,8 @@ jobs:
           context: emoncms/alpine_persistent/.
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: |
-            "EMONCMS_SRC=https://github.com/alexandrecuer/emoncms"
+            "EMONCMS_SRC=https://github.com/${{ matrix.emoncms_src }}"
+            "BRANCH=${{ matrix.branch }}"
             "BUILD_FROM=alpine:${{ matrix.alpine_version }}"
             "PHP_VER=${{ matrix.php_version }}"
             "PHP_CONF=/etc/php${{ matrix.php_version }}/conf.d"
