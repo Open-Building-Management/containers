@@ -2,10 +2,11 @@ name: a matrix test
 
 on:
   workflow_dispatch:
-
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      something: a_simple_test 
     strategy:
       matrix:
         emoncms_version: [11.4.2]
@@ -30,6 +31,7 @@ jobs:
           echo "master_version=$master_version" >> "$GITHUB_ENV"
       - name: using..
         run: |
+          echo $something
           echo $master_version
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
