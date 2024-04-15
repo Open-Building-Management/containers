@@ -11,11 +11,16 @@ jobs:
         emoncms_version: [11.4.2]
         alpine_version: [3.16, 3.18]
         php_version: [8, 81]
+        use_redispy_apk: [0, 1]
         exclude:
         - alpine_version: 3.16
           php_version: 81
         - alpine_version: 3.18
           php_version: 8
+        - alpine_version: 3.16
+          use_redispy_apk: 1
+        - alpine_version: 3.18
+          use_redispy_apk: 0
     steps:
       - name: fetching version number
         run: |
@@ -29,3 +34,4 @@ jobs:
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
+          echo ${{ matrix.use_redispy_apk }}
