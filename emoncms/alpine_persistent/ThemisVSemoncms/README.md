@@ -1,10 +1,12 @@
 # differences 24/04/2024
 
-![image](https://github.com/Open-Building-Management/containers/assets/24553739/7757055d-abe1-4c8d-87f0-46bac9951764)
-![image](https://github.com/Open-Building-Management/containers/assets/24553739/c76cd0cf-c0ce-43c5-bfa5-c7978b8461cf)
+Dockerfile
 
-![image](https://github.com/Open-Building-Management/containers/assets/24553739/a11b960a-08d1-4151-85b8-32b16ed5b375)
-![image](https://github.com/Open-Building-Management/containers/assets/24553739/157a5827-5e6e-48f5-8e64-411759c118a0)
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/641cee8a-e843-495d-932a-ef34671cfd98)
+
+emoncms_pre.sh
+
+![image](https://github.com/Open-Building-Management/containers/assets/24553739/866bb8c8-ecbb-4cee-8341-98c3812579d9)
 
 
 <details id=1>
