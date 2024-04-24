@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       emoncms_src: alexandrecuer/emoncms
-      branch: bios-master
+      branch: bios_master
     strategy:
       matrix:
         include:
