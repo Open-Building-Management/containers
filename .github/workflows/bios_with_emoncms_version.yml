@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       emoncms_src: alexandrecuer/emoncms
-      branch: stable
+      branch: bios-master
     strategy:
       matrix:
         include:
@@ -53,4 +53,4 @@ jobs:
             "PHP_VER=${{ matrix.php_version }}"
             "PHP_CONF=/etc/php${{ matrix.php_version }}/conf.d"
           push: true
-          tags: alexjunk/themis:alpine${{ matrix.alpine_version }}_emoncms${{ steps.emoncms_version.outputs.version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/themis:alpine${{ matrix.alpine_version }}_emoncms${{ steps.emoncms_version.outputs.version }}
