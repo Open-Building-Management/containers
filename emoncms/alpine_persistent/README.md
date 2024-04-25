@@ -27,7 +27,8 @@ ARGS (ONLY) ARE :
 - REDIS_CONF=/etc/redis.conf
 - USE_REDISPY_APK=1
 - MOSQUITTO_PHP=https://github.com/openenergymonitor/Mosquitto-PHP
-- EMONCMS_SRC=https://github.com/emoncms/emoncms
+- EMONCMS_SRC=https://github.com/alexandrecuer/emoncms
+- BRANCH=bios_master
 
 ENV|Dockerfile|makefile (used during build)|emoncms_pre|mysql_ready|ARG
 --|--|--|--|--|--
@@ -65,7 +66,7 @@ USE_HOSTNAME_FOR_MQTT_TOPIC_CLIENTID|||1||
 CNAME|||1||
 REVERSE_PROXY|||1||
 
-REVERSE_PROXY should be renamed CUSTOM_LOCATION
+REVERSE_PROXY should be removed as it is not needed since emoncms can work in ingress mode
 
 
 ## changelog
