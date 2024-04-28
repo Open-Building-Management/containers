@@ -1,0 +1,10 @@
+services:
+  maria:
+    image: basic_alpine3.19_maria10.11.6
+    volumes:
+      - /data:/data
+      - ./mariadb_pre.sh:/mariadb_pre.sh
+      - ./mariadb_post.sh:/mariadb_post.sh
+    environment:
+      - TZ=Europe/Paris
+      - DATADIR=/data/mariadb
