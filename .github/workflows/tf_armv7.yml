@@ -44,4 +44,4 @@ jobs:
             "PAHO_VERSION=${{ matrix.paho }}"
             "TFLITE_VERSION=${{ matrix.tflite }}"
           push: true
-          tags: alexjunk/tf_armv7:ubuntu${{ matrix.ubuntu_version }}_tflite${{ matrix.tflite }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tf_armv7:ubuntu${{ matrix.ubuntu_version }}_tflite${{ matrix.tflite }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}

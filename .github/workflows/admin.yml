@@ -41,4 +41,4 @@ jobs:
           build-args: |
             "BUILD_FROM=alpine:${{ matrix.alpine_version }}"
           push: true
-          tags: alexjunk/admin:${{ matrix.alpine_version }}_${{ steps.get_date.outputs.today }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/admin:${{ matrix.alpine_version }}_${{ steps.get_date.outputs.today }}

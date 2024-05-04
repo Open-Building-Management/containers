@@ -35,4 +35,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: BUILD_FROM=ubuntu:${{ matrix.ubuntu_version }}
           push: true
-          tags: alexjunk/tf:ubuntu${{ matrix.ubuntu_version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tf:ubuntu${{ matrix.ubuntu_version }}

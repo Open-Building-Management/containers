@@ -9,14 +9,13 @@ jobs:
     strategy:
       matrix:
         ubuntu_version: 
-          - 20.04
           - 22.04
         tflite:
           - 2.13.0
         paho:
-          - 1.6.1
+          - 2.1.0
         pymodbus:
-          - 3.4.1
+          - 3.6.8
     steps:
       -
         name: Checkout
@@ -45,4 +44,4 @@ jobs:
             "PAHO_VERSION=${{ matrix.paho }}"
             "TFLITE_VERSION=${{ matrix.tflite }}"
           push: true
-          tags: alexjunk/tf:ubuntu${{ matrix.ubuntu_version }}_tflite${{ matrix.tflite }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tf:ubuntu${{ matrix.ubuntu_version }}_tflite${{ matrix.tflite }}_paho${{ matrix.paho }}_pymodbus${{ matrix.pymodbus}}
