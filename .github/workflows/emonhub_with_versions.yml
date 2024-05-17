@@ -33,9 +33,9 @@ jobs:
         name: create tag
         run: |
           wget https://raw.githubusercontent.com/${{ env.src }}/${{ env.branch }}/module.json
-          version=$(cat version.json | jq --raw-output '.version')
-          t0=alpine${{ env.alpine }}
-          t1=_emonhub$version
+          version=$(cat module.json | jq --raw-output '.version')
+          t0=$version
+          t1=_alpine${{ env.alpine }}
           t2=_paho${{ env.paho }}
           t3=_pymodbus${{ env.pymodbus }}
           echo "tag=$t0$t1$t2$t3" >> "$GITHUB_OUTPUT"
