@@ -29,10 +29,18 @@ jobs:
           master_version=$(cat version.json | jq --raw-output '.version')
           echo $master_version
           echo "master_version=$master_version" >> "$GITHUB_ENV"
+      -
+        id: tag
+        name: create tag
+        run: |
+          tag=alpine${{ matrix.alpine_version }}
+          tag=${{ tag }}_version$master_version
+          echo "tag=$tag" >> "$GITHUB_ENV"
       - name: using..
         run: |
           echo ${{ env.something }}
           echo $master_version
+          echo $tag
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
