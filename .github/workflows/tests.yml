@@ -34,8 +34,9 @@ jobs:
         name: create tag
         run: |
           tag=alpine${{ matrix.alpine_version }}
-          tag1=$tag${{ '_version' }}$master_version
-          echo "tag=$tag1" >> "$GITHUB_ENV"
+          tag1=_version$master_version
+          echo $tag1
+          echo "tag=$tag$tag1" >> "$GITHUB_ENV"
       - name: using..
         run: |
           echo ${{ env.something }}
