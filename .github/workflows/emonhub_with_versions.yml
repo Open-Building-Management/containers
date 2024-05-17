@@ -48,7 +48,7 @@ jobs:
           build-args: |
             "SRC=https://github.com/${{ env.src }}"
             "BRANCH=${{ env.branch }}"
-            "BUILD_FROM=alpine:${{ env.alpine_version }}"
+            "BUILD_FROM=alpine:${{ env.alpine }}"
             "PYMODBUS_VERSION=${{ env.pymodbus }}"
             "PAHO_VERSION=${{ env.paho }}"
           push: true
