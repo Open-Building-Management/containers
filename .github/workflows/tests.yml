@@ -33,15 +33,16 @@ jobs:
         id: tag
         name: create tag
         run: |
-          tag=alpine${{ matrix.alpine_version }}
-          tag1=_version$master_version
-          echo $tag1
-          echo "tag=$tag$tag1" >> "$GITHUB_ENV"
+          t0=alpine${{ matrix.alpine_version }}
+          t1=_version$master_version
+          echo $t0
+          echo $t1
+          echo "tag=$t0$t1" >> "$GITHUB_OUTPUT"
       - name: using..
         run: |
           echo ${{ env.something }}
           echo $master_version
-          echo $tag
+          echo ${{ steps.tag.outputs.tag }}
           echo ${{ matrix.emoncms_version }}
           echo ${{ matrix.php_version }}
           echo ${{ matrix.alpine_version}}
