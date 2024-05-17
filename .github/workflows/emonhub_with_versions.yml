@@ -52,4 +52,6 @@ jobs:
             "PYMODBUS_VERSION=${{ env.pymodbus }}"
             "PAHO_VERSION=${{ env.paho }}"
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/emonhub:${{ steps.tag.outputs.tag }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/emonhub:${{ steps.tag.outputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/emonhub:latest
