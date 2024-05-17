@@ -4,6 +4,8 @@ FROM $BUILD_FROM
 
 # paho-mqtt V2 has new API. stick to V1.x for now
 ARG \
+    SRC=https://github.com/openenergymonitor/emonhub \
+    BRANCH=stable \
     PYMODBUS_VERSION=3.4.1 \
     PAHO_VERSION=1.6.1 \
     EMONHUB_ENV=/opt/v \
@@ -51,7 +53,7 @@ RUN set -eux;\
 
 RUN set -eux;\
     cd $EMONHUB_DIR;\
-    git clone https://github.com/openenergymonitor/emonhub
+    git clone -b $BRANCH $SRC
 
 ENV \
     PATH="${EMONHUB_ENV}/bin:$PATH" \

@@ -1,0 +1,55 @@
+name: emonhub docker images to docker hub - with version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    env:
+      src: openenergymonitor/emonhub
+      branch: stable
+      alpine: 3.19.1
+      pymodbus: 3.6.8
+      paho: 1.6.1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        id: tag
+        name: create tag
+        run: |
+          wget https://raw.githubusercontent.com/${{ env.src }}/${{ env.branch }}/module.json
+          version=$(cat version.json | jq --raw-output '.version')
+          t0=alpine${{ env.alpine }}
+          t1=_emonhub$version
+          t2=_paho${{ env.paho }}
+          t3=_pymodbus${{ env.pymodbus }}
+          echo "tag=$t0$t1$t2$t3" >> "$GITHUB_OUTPUT"
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: emonhub/.
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            "SRC=https://github.com/${{ env.src }}"
+            "BRANCH=${{ env.branch }}"
+            "BUILD_FROM=alpine:${{ env.alpine_version }}"
+            "PYMODBUS_VERSION=${{ env.pymodbus }}"
+            "PAHO_VERSION=${{ env.paho }}"
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/emonhub:${{ steps.tag.outputs.tag }}
