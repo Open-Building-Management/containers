@@ -1,4 +1,4 @@
-name: themis docker images to docker hub
+name: themis img initial dont use
 
 on:
   workflow_dispatch:
