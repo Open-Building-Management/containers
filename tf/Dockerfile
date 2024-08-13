@@ -18,6 +18,7 @@ RUN apt-get -y update;\
     python3 -m pip install --no-cache-dir mysql-connector-python redis;\
     python3 -m pip install --no-cache-dir click requests;\
     python3 -m pip install --no-cache-dir tflite-runtime==$TFLITE_VERSION;\
+    python3 -m pip install --no-cache-dir PyFina;\
     apt-get purge -y --auto-remove python3-pip;\
     apt-get clean
 
