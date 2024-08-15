@@ -1,4 +1,4 @@
-name: themis latest tag to docker hub
+name: themis latest tag
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: lamp docker images to docker hub
+name: lamp - OLD
 
 on:
   workflow_dispatch:
