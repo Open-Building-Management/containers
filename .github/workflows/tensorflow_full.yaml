@@ -1,4 +1,4 @@
-name: build of tensorflow full for arm64
+name: tensorflow full arm64 build
 
 on:
   workflow_dispatch:

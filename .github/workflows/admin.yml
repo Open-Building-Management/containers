@@ -1,4 +1,4 @@
-name: multi arch build of an admin ui for bios
+name: multi arch build of bios admin UI
 
 on:
   workflow_dispatch:

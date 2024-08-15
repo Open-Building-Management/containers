@@ -1,4 +1,4 @@
-name: build of tflite for armv7 ONLY with pip with versions in tag
+name: tflite armv7 build with versions
 
 on:
   workflow_dispatch:

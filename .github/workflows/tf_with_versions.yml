@@ -1,4 +1,4 @@
-name: multi arch amd/arm 64 build of tflite with pip with versions in tag
+name: tflite amd/arm64 build with versions
 
 on:
   workflow_dispatch:
