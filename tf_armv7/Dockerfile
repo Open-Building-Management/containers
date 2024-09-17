@@ -19,8 +19,8 @@ RUN apt-get -y update;\
     python3 -m pip install --no-cache-dir mysql-connector-python redis;\
     python3 -m pip install --no-cache-dir click requests;\
     python3 -m pip install --no-cache-dir tflite-runtime==$TFLITE_VERSION;\
+    python3 -m pip install --no-cache-dir PyFina;\
+    python3 -m pip install --no-cache-dir aiohttp;\
     apt-get purge -y --auto-remove python3-pip;\
     apt-get purge -y --auto-remove swig libjpeg-dev zlib1g-dev python3-dev python-is-python3 unzip git cmake make;\
     apt-get clean
-
-COPY test.py openurl.py .
