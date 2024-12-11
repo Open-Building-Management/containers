@@ -17,10 +17,6 @@ jobs:
         pymodbus: [3.4.1, 3.6.8]
         exclude:
           - folder: "tf"
-            platform: "linux/arm64"
-          - folder: "tf"
-            platform: "linux/amd64"
-          - folder: "tf"
             platform: "linux/arm/v7"
           - folder: "tf_armv7"
             platform: "linux/arm64"
