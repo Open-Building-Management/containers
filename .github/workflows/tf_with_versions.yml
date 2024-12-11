@@ -62,8 +62,8 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ context }}/.
-          platforms: ${{ platform }}
+          context: ${{ matrix.context }}/.
+          platforms: ${{ matrix.platform }}
           build-args: |
             "BUILD_FROM=ubuntu:${{ matrix.ubuntu_version }}"
             "PYMODBUS_VERSION=${{ matrix.pymodbus}}"
@@ -71,4 +71,4 @@ jobs:
             "NUMPY_VERSION=${{ matrix.numpy }}"
             "TFLITE_VERSION=${{ matrix.tflite }}"
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ context }}:${{ steps.tag.outputs.tag }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.context }}:${{ steps.tag.outputs.tag }}
