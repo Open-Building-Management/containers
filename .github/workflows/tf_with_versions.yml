@@ -9,23 +9,23 @@ jobs:
     strategy:
       matrix:
         ubuntu_version: [22.04]
-        context: ["tf", "tf_armv7"]
+        folder: ["tf", "tf_armv7"]
         platform: ["linux/amd64", "linux/arm64", "linux/arm/v7"]
         tflite: [2.13.0]
         numpy: [1.26.4]
         paho: [1.6.1, 2.1.0]
         pymodbus: [3.4.1, 3.6.8]
         exclude:
-          - platform: "tf"
-            context: "linux/arm64"
-          - platform: "tf"
-            context: "linux/amd64"
-          - platform: "tf"
-            context: "linux/arm/v7"
-          - platform: "tf_armv7"
-            context: "linux/arm64"
-          - platform: "tf_armv7"
-            context: "linux/amd64"
+          - folder: "tf"
+            platform: "linux/arm64"
+          - folder: "tf"
+            platform: "linux/amd64"
+          - folder: "tf"
+            platform: "linux/arm/v7"
+          - folder: "tf_armv7"
+            platform: "linux/arm64"
+          - folder: "tf_armv7"
+            platform: "linux/amd64"
           - paho: 1.6.1
             pymodbus: 3.6.8
           - paho: 2.1.0
@@ -62,7 +62,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.context }}/.
+          context: ${{ matrix.folder }}/.
           platforms: ${{ matrix.platform }}
           build-args: |
             "BUILD_FROM=ubuntu:${{ matrix.ubuntu_version }}"
@@ -71,4 +71,4 @@ jobs:
             "NUMPY_VERSION=${{ matrix.numpy }}"
             "TFLITE_VERSION=${{ matrix.tflite }}"
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.context }}:${{ steps.tag.outputs.tag }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.folder }}:${{ steps.tag.outputs.tag }}
