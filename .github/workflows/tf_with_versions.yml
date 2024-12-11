@@ -71,4 +71,4 @@ jobs:
             "NUMPY_VERSION=${{ matrix.numpy }}"
             "TFLITE_VERSION=${{ matrix.tflite }}"
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/{{ context }}:${{ steps.tag.outputs.tag }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ context }}:${{ steps.tag.outputs.tag }}
