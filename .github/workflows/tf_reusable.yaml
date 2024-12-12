@@ -31,7 +31,6 @@ on:
 
 env:
   REGISTRY_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tf_multiarch
-  UV: ${{ github.event.inputs.ubuntu_version }}
 
 jobs:
   tag:
@@ -41,7 +40,6 @@ jobs:
     steps:
       - name: prepare_tag
         run: |
-          echo $${{ env.UU }}
           t0=ubuntu${{ inputs.ubuntu_version }}
           t1=_numpy${{ inputs.numpy }}
           t2=_tflite${{ inputs.tflite }}
