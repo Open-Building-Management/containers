@@ -109,6 +109,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=raw,enable=true,priority=200,prefix=,suffix=,value=${{ steps.tag.outputs.tag }}
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
