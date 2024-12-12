@@ -36,9 +36,9 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.prepare_tag.outputs.tag }}
+      tag: ${{ steps.tag.outputs.tag }}
     steps:
-      - name: prepare_tag
+      - id: tag
         run: |
           t0=ubuntu${{ inputs.ubuntu_version }}
           t1=_numpy${{ inputs.numpy }}
