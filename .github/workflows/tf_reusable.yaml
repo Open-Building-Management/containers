@@ -4,20 +4,30 @@ on:
   workflow_dispatch:
     inputs:
       ubuntu_version:
+        description: 'ubuntu version'
         required: true
         type: string
+        default: '22.04'
       numpy:
+        description: 'numpy version'
         required: true
         type: string
+        default: '1.26.4'
       tflite:
+        description: 'tflite version'
         required: true
         type: string
+        default: '2.13.0'
       paho:
+        description: 'paho mqtt version'
         required: true
         type: string
+        default: '2.1.0'
       pymodbus:
+        description: 'pymodbus version'
         required: true
         type: string
+        default: '3.6.8'
 
 env:
   REGISTRY_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tf_multiarch
@@ -92,6 +102,12 @@ jobs:
         with:
           context: ${{ matrix.folder }}/.
           platforms: ${{ matrix.platform }}
+          build-args: |
+            "BUILD_FROM=ubuntu:${{ inputs.ubuntu_version }}"
+            "PYMODBUS_VERSION=${{ inputs.pymodbus}}"
+            "PAHO_VERSION=${{ inputs.paho }}"
+            "NUMPY_VERSION=${{ inputs.numpy }}"
+            "TFLITE_VERSION=${{ inputs.tflite }}"
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
 
