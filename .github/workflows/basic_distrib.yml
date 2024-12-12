@@ -41,7 +41,7 @@ jobs:
         id: tag
         name: create tag
         run: |
-          t0=_paho${{ matrix.paho }}
+          t0=paho${{ matrix.paho }}
           t1=_pymodbus${{ matrix.pymodbus}}
           echo "tag=$t0$t1" >> "$GITHUB_OUTPUT"
 
