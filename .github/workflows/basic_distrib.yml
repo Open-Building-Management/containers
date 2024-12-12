@@ -7,7 +7,6 @@ env:
   REGISTRY_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/basic
   paho: 2.1.0
   pymodbus: 3.6.8
-  tag: ${{ env.paho }}_${{ env.pymodbus }}
 
 jobs:
   build:
@@ -27,7 +26,10 @@ jobs:
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV         
+          t0=paho${{ env.paho }}
+          t1=_pymodbus${{ env.pymodbus }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV  
+          echo "tag=$t0$t1" >> "$GITHUB_ENV"
 
       - name: Docker meta
         id: meta
