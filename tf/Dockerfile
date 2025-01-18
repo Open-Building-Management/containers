@@ -6,7 +6,8 @@ ARG \
     PYMODBUS_VERSION=3.4.1 \
     PAHO_VERSION=1.6.1 \
     NUMPY_VERSION=1.26.4 \
-    TFLITE_VERSION=2.13.0
+    TFLITE_VERSION=2.13.0 \
+    PYFINA_VERSION=0.0.6
 
 RUN apt-get -y update;\
     apt-get -y upgrade;\
@@ -20,7 +21,7 @@ RUN apt-get -y update;\
     python3 -m pip install --no-cache-dir click requests;\
     python3 -m pip install --no-cache-dir numpy==$NUMPY_VERSION;\
     python3 -m pip install --no-cache-dir tflite-runtime==$TFLITE_VERSION;\
-    python3 -m pip install --no-cache-dir PyFina;\
+    python3 -m pip install --no-cache-dir PyFina==$PYFINA_VERSION;\
     python3 -m pip install --no-cache-dir aiohttp;\
     apt-get purge -y --auto-remove python3-pip;\
     apt-get clean

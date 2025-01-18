@@ -28,6 +28,11 @@ on:
         required: true
         type: string
         default: '3.6.8'
+      pyfina:
+        description: 'pyfina version'
+        required: true
+        type: string
+        default: '0.0.6'
 
 env:
   REGISTRY_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tf_multiarch
@@ -44,8 +49,9 @@ jobs:
           t1=_numpy${{ inputs.numpy }}
           t2=_tflite${{ inputs.tflite }}
           t3=_paho${{ inputs.paho }}
-          t4=_pymodbus${{ inputs.pymodbus}}
-          echo "tag=$t0$t1$t2$t3$t4" >> "$GITHUB_OUTPUT"
+          t4=_pymodbus${{ inputs.pymodbus }}
+          t5=_pyfina${{ inputs.pyfina }}
+          echo "tag=$t0$t1$t2$t3$t4$t5" >> "$GITHUB_OUTPUT"
 
   build:
     runs-on: ubuntu-latest
@@ -106,6 +112,7 @@ jobs:
             "PAHO_VERSION=${{ inputs.paho }}"
             "NUMPY_VERSION=${{ inputs.numpy }}"
             "TFLITE_VERSION=${{ inputs.tflite }}"
+            "PYFINA_VERSION=${{ inputs.pyfina }}"
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
 
@@ -113,7 +120,7 @@ jobs:
         run: |
           mkdir -p /tmp/digests
           digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"          
+          touch "/tmp/digests/${digest#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
