@@ -2,6 +2,17 @@ name: themis with emoncms version
 
 on:
   workflow_dispatch:
+    inputs:
+      alpine_version:
+        description: 'alpine version'
+        required: true
+        type: string
+        default: '3.20'
+      php_version:
+        description: 'php version'
+        required: true
+        type: string
+        default: '83'
 
 jobs:
   docker:
@@ -9,13 +20,6 @@ jobs:
     env:
       emoncms_src: alexandrecuer/emoncms
       branch: bios_master
-    strategy:
-      matrix:
-        include:
-        - alpine_version: '3.19'
-          php_version: 82
-        - alpine_version: '3.20'
-          php_version: 83
     steps:
       -
         name: Checkout
@@ -49,8 +53,8 @@ jobs:
           build-args: |
             "EMONCMS_SRC=https://github.com/${{ env.emoncms_src }}"
             "BRANCH=${{ env.branch }}"
-            "BUILD_FROM=alpine:${{ matrix.alpine_version }}"
-            "PHP_VER=${{ matrix.php_version }}"
-            "PHP_CONF=/etc/php${{ matrix.php_version }}/conf.d"
+            "BUILD_FROM=alpine:${{ inputs.alpine_version }}"
+            "PHP_VER=${{ inputs.php_version }}"
+            "PHP_CONF=/etc/php${{ inputs.php_version }}/conf.d"
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/themis:alpine${{ matrix.alpine_version }}_emoncms${{ steps.emoncms_version.outputs.version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/themis:alpine${{ inputs.alpine_version }}_emoncms${{ steps.emoncms_version.outputs.version }}
