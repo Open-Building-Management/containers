@@ -3,13 +3,16 @@
 ```
 sudo docker build -t obm-vscode .
 ```
+pour avoir tout le détail :
+```
+sudo docker build --progress=plain -t obm-vscode .
+```
 
 pour lancer le container, avec les sources de bios en read-only :
 
 ```
 sudo docker run -it --rm -p 8080:8080 -v ./:/bios:ro -v ./user_config:/user_config obm-vscode
 ```
-
 
 # d'autres images de code server
 
