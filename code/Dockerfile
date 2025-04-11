@@ -10,7 +10,7 @@ ARG \
 	USER_CODE=/user_code \
 	BIOS_LIB=/bios \
 	CODE_SERVER_CONF=/vscode \
-	EXTENSIONS="charliermarsh.ruff ms-python.python esbenp.prettier-vscode" \
+	EXTENSIONS="ms-python.python esbenp.prettier-vscode" \
 	EXTENSIONS_DIR=/vscode/extensions \
 	PORT=8080
 
@@ -20,7 +20,6 @@ RUN set -x;\
 	apt-get install -y --no-install-recommends ca-certificates;\
 	#apt-get install -y --no-install-recommends curl;\
 	#apt-get install -y --no-install-recommends python3 python3-pip;\
-	mkdir $BIOS_LIB;\
 	case $TARGETPLATFORM in \
 	"linux/amd64")  ARCH="amd64"  ;; \
 	"linux/arm/v7") ARCH="armhf"  ;; \
@@ -32,7 +31,7 @@ RUN set -x;\
 	mkdir $USER_CODE;\
 	mkdir $BIOS_LIB;\
  	mkdir -p $EXTENSIONS_DIR;\
- 	if [ "$ARCH" -ne "armhf" ]; then for i in $EXTENSIONS; do code-server --extensions-dir $EXTENSIONS_DIR --install-extension $i; done; fi
+ 	if [ "$ARCH" == "armhf" ]; then for i in $EXTENSIONS; do code-server --extensions-dir $EXTENSIONS_DIR --install-extension $i; done; fi
 
 RUN set -x;\
 	echo "port: $PORT" > /config.yaml;\
