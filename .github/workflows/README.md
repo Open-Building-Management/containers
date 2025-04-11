@@ -19,9 +19,11 @@ sudo docker manifest inspect alexjunk/tf_multiarch:ubuntu22.04_numpy1.26.4_tflit
 
 # distribute builds across multiple runners
 
-When you have different Dockerfilen one for armv7 and one for amd64 or arm64, the solution is to distribute works to multiple runners, to push using `push-by-digest=true` and then to use `docker buildx imagetools create` to create a manifest to regroup the different images produced
+When you have different Dockerfile, one for armv7 and one for amd64 or arm64, the solution is to distribute works to multiple runners, to push using `push-by-digest=true` and then to use `docker buildx imagetools create` to create a manifest to regroup the different images produced
 
 https://docs.docker.com/build/ci/github-actions/multi-platform/
+
+see [basic distribution example workflow](basic_distrib.yml)
 
 The metadata action permits to tag properly as the docs.docker example uses the branch name as tag
 
