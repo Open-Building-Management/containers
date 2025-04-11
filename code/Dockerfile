@@ -32,7 +32,7 @@ RUN set -x;\
 	mkdir $USER_CODE;\
 	mkdir $BIOS_LIB;\
  	mkdir -p $EXTENSIONS_DIR;\
- 	if [ "$ARCH" -ne "armhf ]; then for i in $EXTENSIONS; do code-server --extensions-dir $EXTENSIONS_DIR --install-extension $i; done; fi
+ 	if [ "$ARCH" -ne "armhf" ]; then for i in $EXTENSIONS; do code-server --extensions-dir $EXTENSIONS_DIR --install-extension $i; done; fi
 
 RUN set -x;\
 	echo "port: $PORT" > /config.yaml;\
