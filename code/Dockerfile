@@ -17,9 +17,14 @@ ARG \
 RUN set -x;\
 	apt-get update;\
 	apt-get install -y --no-install-recommends git iputils-ping net-tools;\
-	apt-get install -y --no-install-recommends ca-certificates;\
 	#apt-get install -y --no-install-recommends curl;\
 	#apt-get install -y --no-install-recommends python3 python3-pip;\
+	apt-get install -y --no-install-recommends ca-certificates;\
+	mkdir $USER_CODE;\
+	mkdir $BIOS_LIB;\
+ 	mkdir -p $EXTENSIONS_DIR
+
+RUN set -x;\
 	case $TARGETPLATFORM in \
 	"linux/amd64")  ARCH="amd64"  ;; \
 	"linux/arm/v7") ARCH="armhf"  ;; \
@@ -28,10 +33,7 @@ RUN set -x;\
 	curl -J -L -o $TMP/code.deb $CODE_SRC/v$VERSION/code-server_${VERSION}_$ARCH.deb;\
 	dpkg -i $TMP/code.deb;\
 	rm $TMP/code.deb;\
-	mkdir $USER_CODE;\
-	mkdir $BIOS_LIB;\
- 	mkdir -p $EXTENSIONS_DIR;\
- 	if [ "$ARCH" == "armhf" ]; then for i in $EXTENSIONS; do code-server --extensions-dir $EXTENSIONS_DIR --install-extension $i; done; fi
+ 	if [ "$ARCH" != "armhf" ]; then for i in $EXTENSIONS; do code-server --extensions-dir $EXTENSIONS_DIR --install-extension $i; done; fi
 
 RUN set -x;\
 	echo "port: $PORT" > /config.yaml;\
