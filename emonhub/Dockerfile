@@ -18,7 +18,7 @@ RUN set -eux;\
 
 RUN set -eux;\
     apk update && apk upgrade;\
-    apk add git tzdata nano python3 py3-pip py3-virtualenv;\
+    apk add git tzdata nano python3 py3-pip py3-virtualenv py3-setuptools;\
     #BlueZ libraries and header files
     apk add bluez bluez-dev;\
     # spi headers in package linux-headers :-)
