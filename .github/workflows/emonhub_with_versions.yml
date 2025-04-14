@@ -2,6 +2,21 @@ name: emonhub with version
 
 on:
   workflow_dispatch:
+    alpine:
+      description: 'alpine version'
+      required: true
+      type: string
+      default: '3.20'
+    paho:
+      description: 'paho mqtt version'
+      required: true
+      type: string
+      default: '1.6.1'
+    pymodbus:
+      description: 'pymodbus version'
+      required: true
+      type: string
+      default: '3.6.8'
 
 jobs:
   docker:
@@ -9,9 +24,6 @@ jobs:
     env:
       src: openenergymonitor/emonhub
       branch: stable
-      alpine: 3.19.1
-      pymodbus: 3.6.8
-      paho: 1.6.1
     steps:
       -
         name: Checkout
@@ -35,9 +47,9 @@ jobs:
           wget https://raw.githubusercontent.com/${{ env.src }}/${{ env.branch }}/module.json
           version=$(cat module.json | jq --raw-output '.version')
           t0=$version
-          t1=_alpine${{ env.alpine }}
-          t2=_paho${{ env.paho }}
-          t3=_pymodbus${{ env.pymodbus }}
+          t1=_alpine${{ inputs.alpine }}
+          t2=_paho${{ inputs.paho }}
+          t3=_pymodbus${{ inputs.pymodbus }}
           echo "tag=$t0$t1$t2$t3" >> "$GITHUB_OUTPUT"
       -
         name: Build and push
@@ -48,9 +60,9 @@ jobs:
           build-args: |
             "SRC=https://github.com/${{ env.src }}"
             "BRANCH=${{ env.branch }}"
-            "BUILD_FROM=alpine:${{ env.alpine }}"
-            "PYMODBUS_VERSION=${{ env.pymodbus }}"
-            "PAHO_VERSION=${{ env.paho }}"
+            "BUILD_FROM=alpine:${{ inputs.alpine }}"
+            "PYMODBUS_VERSION=${{ inputs.pymodbus }}"
+            "PAHO_VERSION=${{ inputs.paho }}"
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/emonhub:${{ steps.tag.outputs.tag }}
