@@ -18,9 +18,10 @@ RUN set -eux;\
 
 RUN set -eux;\
     apk update && apk upgrade;\
-    apk add git tzdata nano python3 py3-pip py3-virtualenv py3-setuptools;\
+    apk add git tzdata nano python3 py3-pip py3-virtualenv;\
+    apk add glib glib-dev;\
     #BlueZ libraries and header files
-    apk add bluez bluez-dev;\
+    #apk add bluez bluez-dev;\
     # spi headers in package linux-headers :-)
     # cf https://pkgs.alpinelinux.org/contents?file=*spi*&path=&name=linux-headers&branch=edge
     apk add linux-headers;\
@@ -35,16 +36,7 @@ RUN set -eux;\
     $EMONHUB_ENV/bin/pip install --no-cache-dir --upgrade paho-mqtt==$PAHO_VERSION;\
     $EMONHUB_ENV/bin/pip install --no-cache-dir requests py-sds011 sdm_modbus minimalmodbus;\
     $EMONHUB_ENV/bin/pip install --no-cache-dir spidev;\
-    cd $TEMP_DIR;\
-    # to install spidev, another option is :
-    # git clone https://github.com/doceme/py-spidev
-    # cd py-spidev;\
-    # python3 setup.py install;\
-    # installing pybluez through pip is not working
-    #$EMONHUB_ENV/bin/pip install --no-cache-dir pybluez;\
-    git clone https://github.com/pybluez/pybluez;\
-    cd pybluez;\
-    $EMONHUB_ENV/bin/python3 setup.py install;\
+    $EMONHUB_ENV/bin/pip install --no-cache-dir bluepy;\
     # Custom rpi-rfm69 library used for SPI RFM69 Low Power Labs interfacer
     $EMONHUB_ENV/bin/pip install https://github.com/openenergymonitor/rpi-rfm69/archive/refs/tags/v0.3.0-oem-4.zip;\
     # recover some space
