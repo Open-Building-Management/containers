@@ -4,7 +4,7 @@ build localy with all the details :
 sudo docker build --progress=plain -t emonhubtest --build-arg="BUILD_FROM=alpine:3.20" --build-arg="PYMODBUS_VERSION=3.6.8" .
 ```
 
-to check the pip ackages once connected :
+to check the pip packages once connected :
 ```
 /opt/v/bin/pip list
 ```
