@@ -20,6 +20,7 @@ RUN set -x;\
 	#apt-get install -y --no-install-recommends curl;\
 	#apt-get install -y --no-install-recommends python3 python3-pip;\
 	apt-get install -y --no-install-recommends ca-certificates;\
+ 	if [ "$ARCH" = "armhf" ]; then apt-get install -y --no-install-recommends libatomic1; fi;\
 	mkdir $USER_CODE;\
 	mkdir $BIOS_LIB;\
  	mkdir -p $EXTENSIONS_DIR
@@ -49,4 +50,3 @@ ENV \
  
 SHELL ["/bin/bash", "-c"]
 CMD ["code-server", "/user_code", "--config", "/config.yaml"]
- 
