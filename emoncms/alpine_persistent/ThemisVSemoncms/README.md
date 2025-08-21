@@ -1,4 +1,29 @@
-# differences 24/04/2024
+# differences-21/08/2025
+
+Dockerfile
+
+<img width="1531" height="812" alt="image" src="https://github.com/user-attachments/assets/338bee33-3a4d-496e-be51-c2301c390212" />
+
+<img width="1504" height="866" alt="image" src="https://github.com/user-attachments/assets/2c276459-4b1e-4f44-9f3e-b9185f56212d" />
+
+emoncms_pre.sh
+
+<img width="1531" height="682" alt="image" src="https://github.com/user-attachments/assets/9be538a8-6895-4018-b8f3-58decf4d0bec" />
+
+<img width="1531" height="774" alt="image" src="https://github.com/user-attachments/assets/2ece48d5-f1b7-4f78-be17-2696db2989e8" />
+
+sql_ready
+
+<img width="1525" height="167" alt="image" src="https://github.com/user-attachments/assets/ea801f7e-da20-4390-bfd3-4f4647bf4d95" />
+
+makefile
+
+<img width="1525" height="604" alt="image" src="https://github.com/user-attachments/assets/c127cead-ceab-4260-abec-e4f5442117b3" />
+
+
+
+<details id=1>
+<summary><h2>differences 24/04/2024</h2></summary>
 
 Dockerfile
 
@@ -8,8 +33,9 @@ emoncms_pre.sh
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/866bb8c8-ecbb-4cee-8341-98c3812579d9)
 
+</details>
 
-<details id=1>
+<details id=2>
 <summary><h2>differences 08/04/2024</h2></summary>
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/cec205fc-1457-4feb-b587-becad95dc52c)
@@ -20,7 +46,7 @@ emoncms_pre.sh
 
 </details>
 
-<details id=1>
+<details id=3>
 <summary><h2>differences 07/04/2024</h2></summary>
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/e5253034-50a5-4895-8d98-06f684dda970)
@@ -32,7 +58,7 @@ emoncms_pre.sh
 
 </details>
 
-<details id=2>
+<details id=4>
 <summary><h2>differences 29/03/2024</h2></summary>
 
 ![image](https://github.com/Open-Building-Management/containers/assets/24553739/659fe6d1-8c27-423b-b533-4de36cfec5ec)
