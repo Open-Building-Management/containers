@@ -7,7 +7,7 @@ ARG \
 	ENV_DIR=/ve
 
 RUN apk update && apk upgrade;\
-	apk add --no-cache tzdata python3 py3-pip py3-virtualenv py3-numpy;\
+	apk add --no-cache tzdata python3 git py3-pip py3-virtualenv py3-numpy;\
 	python3 -m venv --system-site-packages $ENV_DIR;\
 	$ENV_DIR/bin/pip install --no-cache-dir flask docker;\
 	$ENV_DIR/bin/pip install --no-cache-dir PyFina==$PYFINA_VERSION;\
