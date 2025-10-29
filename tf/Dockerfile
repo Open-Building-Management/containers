@@ -25,7 +25,7 @@ RUN apt-get -y update;\
     $ENV_DIR/bin/pip install --no-cache-dir tflite-runtime==$TFLITE_VERSION;\
     $ENV_DIR/bin/pip install --no-cache-dir PyFina==$PYFINA_VERSION;\
     $ENV_DIR/bin/pip install --no-cache-dir aiohttp;\
-    apt-get purge -y --auto-remove python3-dev;\
+    apt-get purge -y --auto-remove python3-pip python3-venv python3-dev;\
     apt-get clean
 
 ENV \

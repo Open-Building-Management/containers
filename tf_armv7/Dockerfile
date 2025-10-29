@@ -14,8 +14,8 @@ RUN apt-get -y update;\
     apt-get -y upgrade;\
     apt-get install -y tzdata;\
     apt-get install -y wget curl nano;\
-    apt-get -y install python3 python3-pip;\
-    apt-get -y install swig libjpeg-dev zlib1g-dev python3-dev python3-venv python-is-python3 unzip git cmake make;\
+    apt-get -y install python3 python3-pip python3-dev python3-venv;\
+    apt-get -y install swig libjpeg-dev zlib1g-dev python-is-python3 unzip git cmake make;\
     python3 -m venv $ENV_DIR;\
     $ENV_DIR/bin/pip install --no-cache-dir pip --upgrade;\
     $ENV_DIR/bin/pip install --no-cache-dir pyserial pymodbus==$PYMODBUS_VERSION;\
@@ -26,7 +26,8 @@ RUN apt-get -y update;\
     $ENV_DIR/bin/pip install --no-cache-dir tflite-runtime==$TFLITE_VERSION;\
     $ENV_DIR/bin/pip install --no-cache-dir PyFina==$PYFINA_VERSION;\
     $ENV_DIR/bin/pip install --no-cache-dir aiohttp;\
-    apt-get purge -y --auto-remove swig libjpeg-dev zlib1g-dev python3-dev python-is-python3 unzip git cmake make;\
+    apt-get purge -y --auto-remove python3-pip python3-dev python3-venv;\
+    apt-get purge -y --auto-remove swig libjpeg-dev zlib1g-dev python-is-python3 unzip git cmake make;\
     apt-get clean
 
 ENV \
