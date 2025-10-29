@@ -15,6 +15,19 @@ docker run --rm --network=container:bios -v ~/Documents/GitHub/BIOS2:/bios -it a
 
 # changes log
 
+full local build with all github actions inputs
+
+```
+sudo docker buildx build -t tf:multiarch_test \
+  --build-arg BUILD_FROM=ubuntu:22.04 \
+  --build-arg PYMODBUS_VERSION=3.11.3 \
+  --build-arg PAHO_VERSION=2.1.0 \
+  --build-arg NUMPY_VERSION=1.26.4 \
+  --build-arg TFLITE_VERSION=2.13.0 \
+  --build-arg PYFINA_VERSION=0.0.7 \
+  .
+```
+
 Introducing a BUILD_FROM before the FROM instruction.
 
 An ARG declared before the FROM instruction can’t be used after the FROM except you redeclare it after the FROM without the value.
