@@ -1,0 +1,16 @@
+{
+  "name": "ep_simulation",
+  "dockerComposeFile": "dev-compose.yaml",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "service": "devcontainer",
+  "forwardPorts": [8888],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

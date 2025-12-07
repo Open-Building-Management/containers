@@ -1,0 +1,8 @@
+services:
+  devcontainer:
+    image: ${EP_TAG}
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ../:/workspace
+    command: sleep infinity
