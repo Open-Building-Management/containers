@@ -6,15 +6,13 @@ Un des sujets les plus intéressants en thermique du bâtiment !
 
 # outils gravitant autour de la modélisation du bâtiment
 
-Rhino = Modélisation géométrique / paramétrique haut niveau.
-
-Revit = BIM + coordination de projets, pas simulation.
-
-Pollination = pont moderne entre géométrie/BIM et simulation physique. c'est une plateforme d’ingénierie avancée basée sur EnergyPlus pour experts & workflows paramétriques.
-
-Pleiades = outil d’ingénieur thermicien orienté réglementation française et audits.
-
-EnergyPlus = le moteur de simulation thermique et énergétique de bâtiments développé par le DOE (Department of Energy américain).
+Outil | Usage
+--|--
+Rhino | Modélisation géométrique / paramétrique haut niveau.
+Revit | BIM + coordination de projets, pas simulation.
+Pollination | Pont moderne entre géométrie/BIM et simulation physique. Plateforme d’ingénierie avancée basée sur EnergyPlus pour experts, avec workflows paramétriques.
+Pleiades | Outil d’ingénieur thermicien orienté réglementation française et audits.
+EnergyPlus | Moteur de simulation thermique et énergétique de bâtiments développé par le DOE (Department of Energy américain).
 
 # build
 
