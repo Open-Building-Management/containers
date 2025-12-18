@@ -15,6 +15,11 @@ Pleiades | Outil d’ingénieur thermicien orienté réglementation française e
 EnergyPlus | Moteur de simulation thermique et énergétique de bâtiments développé par le DOE (Department of Energy américain).
 openstudio application | free GUI pour visualiser l'idf qui va être utilisé par energyplus - https://github.com/openstudiocoalition/OpenStudioApplication
 
+pour l'installation de openstudio application, aller dans les releases : https://github.com/openstudiocoalition/OpenStudioApplication/releases/
+- pour windows, prendre l'exe
+- pour linux, utiliser les tar.gz en choisissant la bonne version d'ubuntu. Ne pas passer par les fichiers sh qui sont trop lents à télécharger
+
+
 # ladybug tools
 
 des outils python pour produire un idf 
