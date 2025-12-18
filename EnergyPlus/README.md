@@ -19,6 +19,21 @@ pour l'installation de openstudio application, aller dans les releases : https:/
 - pour windows, prendre l'exe
 - pour linux, utiliser les tar.gz en choisissant la bonne version d'ubuntu. Ne pas passer par les fichiers sh qui sont trop lents à télécharger
 
+sous linux/ubuntu, il peut etre necessaire de désinstaller openstudio lorsqu'on a essayé d'importer un idf incorrect
+
+```
+pkill -f OpenStudio
+rm -rf ~/.openstudio
+rm -rf ~/.local/share/OpenStudio*
+rm -rf ~/.config/OpenStudio*
+rm -rf ~/.cache/OpenStudio*
+sudo rm -rf /usr/local/openstudio*
+sudo rm -rf /opt/openstudio*
+sudo dpkg -i OpenStudioApplication-1.6.0.deb
+sudo apt-get install -f
+```
+
+
 
 # ladybug tools
 
@@ -27,11 +42,15 @@ des outils python pour produire un idf
 https://github.com/ladybug-tools
 
 ## géométrique
+
 - honeybee - https://github.com/ladybug-tools/honeybee-core
 - ladybug_geometry - https://github.com/ladybug-tools/ladybug-geometry
-## énergétique, matériaux
-honeybee-energy - https://github.com/ladybug-tools/honeybee-energy
 
+https://www.ladybug.tools/honeybee-energy/docs/index.html
+
+## énergétique, matériaux
+
+honeybee-energy - https://github.com/ladybug-tools/honeybee-energy
 
 
 # build
