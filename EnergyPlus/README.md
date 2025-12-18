@@ -13,6 +13,21 @@ Revit | BIM + coordination de projets, pas simulation.
 Pollination | Pont moderne entre géométrie/BIM et simulation physique. Plateforme d’ingénierie avancée basée sur EnergyPlus pour experts, avec workflows paramétriques.
 Pleiades | Outil d’ingénieur thermicien orienté réglementation française et audits.
 EnergyPlus | Moteur de simulation thermique et énergétique de bâtiments développé par le DOE (Department of Energy américain).
+openstudio application | free GUI pour visualiser l'idf qui va être utilisé par energyplus - https://github.com/openstudiocoalition/OpenStudioApplication
+
+# ladybug tools
+
+des outils python pour produire un idf 
+
+https://github.com/ladybug-tools
+
+## géométrique
+- honeybee - https://github.com/ladybug-tools/honeybee-core
+- ladybug_geometry - https://github.com/ladybug-tools/ladybug-geometry
+## énergétique, matériaux
+honeybee-energy - https://github.com/ladybug-tools/honeybee-energy
+
+
 
 # build
 
