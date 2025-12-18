@@ -4,6 +4,12 @@ optimal restart : déterminer le bon moment pour relancer le chauffage avant l�
 
 Un des sujets les plus intéressants en thermique du bâtiment !
 
+# build
+
+```
+docker build -t energyplus-python .
+```
+
 # outils gravitant autour de la modélisation du bâtiment
 
 Outil | Usage
@@ -52,12 +58,6 @@ https://www.ladybug.tools/honeybee-energy/docs/index.html
 
 honeybee-energy - https://github.com/ladybug-tools/honeybee-energy
 
-
-# build
-
-```
-docker build -t energyplus-python .
-```
 
 # epw files
 
