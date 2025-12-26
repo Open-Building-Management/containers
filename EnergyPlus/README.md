@@ -4,6 +4,10 @@ optimal restart : déterminer le bon moment pour relancer le chauffage avant l�
 
 Un des sujets les plus intéressants en thermique du bâtiment !
 
+# fichiers osm
+
+https://www.energycodes.gov/prototype-building-models
+
 # build
 
 ```
