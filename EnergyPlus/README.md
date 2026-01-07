@@ -23,7 +23,7 @@ Revit | BIM + coordination de projets, pas simulation.
 Pollination | Pont moderne entre géométrie/BIM et simulation physique. Plateforme d’ingénierie avancée basée sur EnergyPlus pour experts, avec workflows paramétriques.
 Pleiades | Outil d’ingénieur thermicien orienté réglementation française et audits.
 EnergyPlus | Moteur de simulation thermique et énergétique de bâtiments développé par le DOE (Department of Energy américain).
-openstudio application | free GUI pour visualiser l'idf qui va être utilisé par energyplus - https://github.com/openstudiocoalition/OpenStudioApplication
+openstudio application | free GUI pour visualiser l'idf qui va être utilisé par energyplus - https://github.com/openstudiocoalition/OpenStudioApplication et https://openstudiocoalition.org/app/#/app/releases
 DVIEW | https://github.com/NREL/wex/wiki/DView et https://github.com/NREL/wex/releases/tag/v1.2.0
 
 pour l'installation de openstudio application, aller dans les releases : https://github.com/openstudiocoalition/OpenStudioApplication/releases/
