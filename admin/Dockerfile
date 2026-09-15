@@ -12,7 +12,7 @@ RUN apk update && apk upgrade;\
 	$ENV_DIR/bin/pip install --no-cache-dir flask docker;\
 	$ENV_DIR/bin/pip install --no-cache-dir PyFina==$PYFINA_VERSION;\
 	$ENV_DIR/bin/pip install --no-cache-dir mysql-connector-python redis;\
-	$ENV_DIR/bin/pip install --no-cache-dir pyyaml
+	$ENV_DIR/bin/pip install --no-cache-dir pyyaml bcrypt argon2-cffi
 
 ENV \
 	PATH="${ENV_DIR}/bin:$PATH" \
